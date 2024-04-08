@@ -1,7 +1,7 @@
 SCREEN_X = 1024
 SCREEN_Y = 768
 # Launch the application in fullscreen
-FULLSCREEN = True
+FULLSCREEN = False
 BG_FILENAME = "mayhem-bg.png"
 FRAMERATE = 60
 
