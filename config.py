@@ -1,8 +1,8 @@
 import pygame
 import random
 
-SCREEN_X = 111
-SCREEN_Y = 123
+SCREEN_X = 1024
+SCREEN_Y = 768
 # Launch the application in fullscreen
 FULLSCREEN = True
 BG_FILENAME = ""
