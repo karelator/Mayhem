@@ -1,34 +1,10 @@
 # Import pygame with abbreviated alias
 import pygame as pg
-# Import config
-import config
+# Import config and functions file
+import config as cfg
+import functions as fun
 # Used for making sure code is exited fully when game is closed
 import sys
-
-# Function to scale a image object so it covers the display without distortion
-def scale_to_cover(img_obj, x, y):
-    # If taller than original ratio
-    if x / y <= img_obj.get_width() / img_obj.get_height():
-        new_img = pg.transform.scale(img_obj, (y *  (img_obj.get_width() / img_obj.get_height()), y))
-    # If wider than original ratio
-    else:
-        new_img = pg.transform.scale(img_obj, (x, x * (img_obj.get_height() / img_obj.get_width())))
-    new_img.convert()
-    return new_img
-
-# Function to scale a image object so it fits within the display without distortion
-def scale_to_fit(img_obj, x, y):
-    # If taller than original ratio
-    if x / y <= img_obj.get_width() / img_obj.get_height():
-        new_img = pg.transform.scale(img_obj, (x, x * (img_obj.get_height() / img_obj.get_width())))
-    # If wider than original ratio
-    else:
-        new_img = pg.transform.scale(img_obj, (y *  (img_obj.get_width() / img_obj.get_height()), y))
-    new_img.convert()
-    return new_img
-
-
-
 
 if __name__ != "__main__":
     sys.exit()
@@ -37,17 +13,18 @@ if __name__ != "__main__":
 pg.init()
 infoObject = pg.display.Info() 
 # File directories and screen size
-SCREEN_X = infoObject.current_w if config.FULLSCREEN else config.SCREEN_X
-SCREEN_Y = infoObject.current_h if config.FULLSCREEN else config.SCREEN_Y
+FULLSCREEN = cfg.FULLSCREEN
+SCREEN_X = infoObject.current_w if cfg.FULLSCREEN else cfg.SCREEN_X
+SCREEN_Y = infoObject.current_h if cfg.FULLSCREEN else cfg.SCREEN_Y
 
 
-# Initialize screen
-screen = pg.display.set_mode((SCREEN_X, SCREEN_Y), pg.FULLSCREEN) if config.FULLSCREEN else pg.display.set_mode((SCREEN_X, SCREEN_Y), pg.RESIZABLE)
+# Initialize screen depending on launched with fullscreen or not
+screen = pg.display.set_mode((SCREEN_X, SCREEN_Y), pg.FULLSCREEN) if FULLSCREEN else pg.display.set_mode((SCREEN_X, SCREEN_Y), pg.RESIZABLE)
 
 # Initialize background object and scale to cover screen
-origbg = pg.image.load(config.BG_FILENAME)
+origbg = pg.image.load(cfg.BG_FILENAME)
 origbg.convert()
-background = scale_to_cover(origbg, SCREEN_X, SCREEN_Y)
+background = fun.scale_to_cover(origbg, SCREEN_X, SCREEN_Y)
 
 clock = pg.time.Clock()
 
@@ -56,17 +33,31 @@ while running:
     # Draw background such that bg_img center aligns with display center
     screen.blit(background, ((SCREEN_X / 2) - (background.get_width() / 2), (SCREEN_Y / 2) - (background.get_height() / 2)))
 
-    # Exit application if player pressed quit button or escape
+    # Accept user input
     for event in pg.event.get():
+        # Exit application if player pressed quit button or escape
         if event.type == pg.QUIT or event.type == pg.KEYDOWN and event.key == pg.K_ESCAPE:
             running = False
+        # Resize window properly
         elif event.type == pg.VIDEORESIZE:
-            SCREEN_X, SCREEN_Y = event.w, event.h
-            pg.display.set_mode((SCREEN_X, SCREEN_Y), pg.RESIZABLE)
-            background = scale_to_cover(origbg, SCREEN_X, SCREEN_Y)
-           
+            if not FULLSCREEN:
+                SCREEN_X, SCREEN_Y = event.w, event.h
+                pg.display.set_mode((SCREEN_X, SCREEN_Y), pg.RESIZABLE)
+                background = fun.scale_to_cover(origbg, SCREEN_X, SCREEN_Y)
+
+        # Toggle between Fullscreen and Windowed
+        elif event.type == pg.KEYDOWN and event.key == pg.K_F11:
+            # Toggle Fullscreen bool
+            FULLSCREEN = not FULLSCREEN
+            SCREEN_X = infoObject.current_w if FULLSCREEN else cfg.SCREEN_X
+            SCREEN_Y = infoObject.current_h if FULLSCREEN else cfg.SCREEN_Y
+            screen = pg.display.set_mode((SCREEN_X, SCREEN_Y), pg.FULLSCREEN) if FULLSCREEN else\
+                     pg.display.set_mode((SCREEN_X, SCREEN_Y), pg.RESIZABLE)
+            background = fun.scale_to_cover(origbg, SCREEN_X, SCREEN_Y)
+
+
+        # Accept game input
         elif event.type == pg.KEYDOWN:
-            # Switch settings
             if event.key == pg.K_w:
                 pass
             elif event.key == pg.K_a:
@@ -78,7 +69,7 @@ while running:
 
     # Update the screen after all events have taken place
     pg.display.update()
-    clock.tick(config.FRAMERATE)
+    clock.tick(cfg.FRAMERATE)
 
 pg.quit()
 sys.exit()
