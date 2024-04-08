@@ -6,10 +6,6 @@ import config
 import sys
 
 
-# Settings:
-
-
-
 # Object for monitor size
 pg.init()
 infoObject = pg.display.Info() 
