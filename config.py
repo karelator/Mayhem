@@ -4,4 +4,5 @@ SCREEN_Y = 768
 FULLSCREEN = False
 BG_FILENAME = "mayhem-bg.png"
 FRAMERATE = 60
+MARGIN = 50
 

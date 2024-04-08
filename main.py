@@ -26,12 +26,20 @@ origbg = pg.image.load(cfg.BG_FILENAME)
 origbg.convert()
 background = fun.scale_to_cover(origbg, SCREEN_X, SCREEN_Y)
 
+# Initialize game surface to 4:3 aspect ratio and scale to fit within screen, with padding
+orig_playarea = pg.Surface((4, 3), pg.SRCALPHA)
+# temp to test intended behaviour
+orig_playarea.fill((200, 0, 0))
+playarea = fun.scale_to_fit(orig_playarea, SCREEN_X - cfg.MARGIN, SCREEN_Y - cfg.MARGIN)
+
 clock = pg.time.Clock()
 
 running = True
 while running:
-    # Draw background such that bg_img center aligns with display center
+    # Draw bg and game surface such that centers aligns with display center
     screen.blit(background, ((SCREEN_X / 2) - (background.get_width() / 2), (SCREEN_Y / 2) - (background.get_height() / 2)))
+    screen.blit(playarea, ((SCREEN_X / 2) - (playarea.get_width() / 2), (SCREEN_Y / 2) - (playarea.get_height() / 2)))
+
 
     # Accept user input
     for event in pg.event.get():
@@ -44,6 +52,8 @@ while running:
                 SCREEN_X, SCREEN_Y = event.w, event.h
                 pg.display.set_mode((SCREEN_X, SCREEN_Y), pg.RESIZABLE)
                 background = fun.scale_to_cover(origbg, SCREEN_X, SCREEN_Y)
+                playarea = fun.scale_to_fit(orig_playarea, SCREEN_X - cfg.MARGIN, SCREEN_Y - cfg.MARGIN)
+
 
         # Toggle between Fullscreen and Windowed
         elif event.type == pg.KEYDOWN and event.key == pg.K_F11:
@@ -54,6 +64,7 @@ while running:
             screen = pg.display.set_mode((SCREEN_X, SCREEN_Y), pg.FULLSCREEN) if FULLSCREEN else\
                      pg.display.set_mode((SCREEN_X, SCREEN_Y), pg.RESIZABLE)
             background = fun.scale_to_cover(origbg, SCREEN_X, SCREEN_Y)
+            playarea = fun.scale_to_fit(orig_playarea, SCREEN_X - cfg.MARGIN, SCREEN_Y - cfg.MARGIN)
 
 
         # Accept game input
