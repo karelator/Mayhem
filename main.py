@@ -32,37 +32,7 @@ orig_playarea = pg.Surface((4, 3), pg.SRCALPHA)
 orig_playarea.fill((200, 0, 0))
 playarea = fun.scale_to_fit(orig_playarea, SCREEN_X - cfg.MARGIN, SCREEN_Y - cfg.MARGIN)
 
-class Item(pg.sprite.Sprite):
-    def __init__(self, image):
-        super().__init__()
-        self.original_image = image
-        self.image = image
-        self.width = self.image.get_width()
-        self.height = self.image.get_height()
-        # self.rect = rect
 
-class Movable_object(Item):
-    def __init__(self, image):
-        super().__init__(image)
-
-    def update(self):
-        pass
-
-class Player(Movable_object):
-    def __init__(self, image):
-        super().__init__(image)
-
-    def update(self):
-        pass
-
-class Asteroid(Movable_object):
-    def __init__(self, image):
-        super().__init__(image)
-
-    def update(self):
-        pass
-
-    
 
 clock = pg.time.Clock()
 
