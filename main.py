@@ -73,17 +73,6 @@ while running:
             playarea = fun.scale_to_fit(orig_playarea, SCREEN_X - cfg.MARGIN, SCREEN_Y - cfg.MARGIN)
 
 
-        # Accept game input
-        elif event.type == pg.KEYDOWN:
-            if event.key == pg.K_w:
-                pass
-            elif event.key == pg.K_a:
-                pass
-            elif event.key == pg.K_s:
-                pass
-            elif event.key == pg.K_d:
-                pass
-
     # Parse player input to rockets
     keys = pg.key.get_pressed()
     # [Thrust 0/1, Shoot 0/1, Rotate -1/0/1]
