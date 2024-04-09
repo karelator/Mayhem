@@ -27,12 +27,14 @@ origbg.convert()
 background = fun.scale_to_cover(origbg, SCREEN_X, SCREEN_Y)
 
 # Initialize game surface to 4:3 aspect ratio and scale to fit within screen, with padding
-orig_playarea = pg.Surface((4, 3), pg.SRCALPHA)
+orig_playarea = pg.Surface((1440, 1080), pg.SRCALPHA)
 # temp to test intended behaviour
 orig_playarea.fill((200, 0, 0))
 playarea = fun.scale_to_fit(orig_playarea, SCREEN_X - cfg.MARGIN, SCREEN_Y - cfg.MARGIN)
 
 clock = pg.time.Clock()
+
+
 
 running = True
 while running:
