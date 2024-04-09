@@ -5,4 +5,6 @@ FULLSCREEN = False
 BG_FILENAME = "mayhem-bg.png"
 FRAMERATE = 60
 MARGIN = 50
+# Gravitational Force in pixels per frame
+GRAVITY = 1
 

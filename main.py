@@ -3,6 +3,7 @@ import pygame as pg
 # Import config and functions file
 import config as cfg
 import functions as fun
+import classes as c
 # Used for making sure code is exited fully when game is closed
 import sys
 
@@ -34,6 +35,9 @@ playarea = fun.scale_to_fit(orig_playarea, SCREEN_X - cfg.MARGIN, SCREEN_Y - cfg
 
 clock = pg.time.Clock()
 
+# Initialize the two players
+Player1 = c.Player(100, 800)
+Player2 = c.Player(1340, 800)
 
 
 running = True
@@ -69,16 +73,14 @@ while running:
             playarea = fun.scale_to_fit(orig_playarea, SCREEN_X - cfg.MARGIN, SCREEN_Y - cfg.MARGIN)
 
 
-        # Accept game input
-        elif event.type == pg.KEYDOWN:
-            if event.key == pg.K_w:
-                pass
-            elif event.key == pg.K_a:
-                pass
-            elif event.key == pg.K_s:
-                pass
-            elif event.key == pg.K_d:
-                pass
+    # Parse player input to rockets
+    keys = pg.key.get_pressed()
+    # [Thrust 0/1, Shoot 0/1, Rotate -1/0/1]
+    P1_input = [keys[pg.K_w], keys[pg.K_s], keys[pg.K_a] - keys[pg.K_d]]
+    P2_input = [keys[pg.K_UP], keys[pg.K_DOWN], keys[pg.K_LEFT] - keys[pg.K_RIGHT]]
+    # Store inputs in input field so it is accessable in update
+    Player1.set_inputs(P1_input)
+    Player2.set_inputs(P2_input)
 
     # Update the screen after all events have taken place
     pg.display.update()
