@@ -32,8 +32,6 @@ orig_playarea = pg.Surface((4, 3), pg.SRCALPHA)
 orig_playarea.fill((200, 0, 0))
 playarea = fun.scale_to_fit(orig_playarea, SCREEN_X - cfg.MARGIN, SCREEN_Y - cfg.MARGIN)
 
-
-
 clock = pg.time.Clock()
 
 running = True
