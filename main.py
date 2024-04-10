@@ -54,7 +54,7 @@ running = True
 while running:
 
     # Reset playarea
-    orig_playarea.fill((200, 0, 0, 80))
+    orig_playarea.fill((250, 0, 0, 90))
 
 
     # Accept user input

@@ -9,10 +9,8 @@ class Element(pg.sprite.Sprite):
         super().__init__()
         self.original_image = image
         self.image = image
-        self.width = self.image.get_width()
-        self.height = self.image.get_height()
-        # Initialize rect to starting position with size of width and height
-        self.rect = pg.rect.Rect(x, y, self.width, self.height)
+        # Initialize rect to image located at coords
+        self.rect = self.image.get_rect(center=(x, y))
 
 class Item(Element):
     def __init__(self, image):
