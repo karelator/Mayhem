@@ -1,9 +1,11 @@
-# Import pygame with abbreviated alias
+# Import pygame with abbreviated alias, and initialize
 import pygame as pg
+pg.init()
 # Import config and functions file
 import config as cfg
 import functions as fun
 import classes as c
+import assets as asset
 # Used for making sure code is exited fully when game is closed
 import sys
 
@@ -11,7 +13,6 @@ if __name__ != "__main__":
     sys.exit()
 
 # Object for monitor size
-pg.init()
 infoObject = pg.display.Info() 
 # File directories and screen size
 FULLSCREEN = cfg.FULLSCREEN
@@ -23,28 +24,37 @@ SCREEN_Y = infoObject.current_h if cfg.FULLSCREEN else cfg.SCREEN_Y
 screen = pg.display.set_mode((SCREEN_X, SCREEN_Y), pg.FULLSCREEN) if FULLSCREEN else pg.display.set_mode((SCREEN_X, SCREEN_Y), pg.RESIZABLE)
 
 # Initialize background object and scale to cover screen
-origbg = pg.image.load(cfg.BG_FILENAME)
-origbg.convert()
-background = fun.scale_to_cover(origbg, SCREEN_X, SCREEN_Y)
+
+background = fun.scale_to_cover(asset.origbg, SCREEN_X, SCREEN_Y)
+
 
 # Initialize game surface to 4:3 aspect ratio and scale to fit within screen, with padding
 orig_playarea = pg.Surface((1440, 1080), pg.SRCALPHA)
-# temp to test intended behaviour
-orig_playarea.fill((200, 0, 0))
-playarea = fun.scale_to_fit(orig_playarea, SCREEN_X - cfg.MARGIN, SCREEN_Y - cfg.MARGIN)
+orig_playarea.fill((200, 0, 0, 80))
+ 
 
 clock = pg.time.Clock()
+
+# Make group for all sprites
+all_sprites = pg.sprite.Group()
 
 # Initialize the two players
 Player1 = c.Player(100, 800)
 Player2 = c.Player(1340, 800)
 
+# Make group for player sprites, then add to all sprite group
+player_group = pg.sprite.Group(Player1, Player2)
+for player in player_group:
+    all_sprites.add(player)
+
+# TODO: Make groups for other sprite types
+
 
 running = True
 while running:
-    # Draw bg and game surface such that centers aligns with display center
-    screen.blit(background, ((SCREEN_X / 2) - (background.get_width() / 2), (SCREEN_Y / 2) - (background.get_height() / 2)))
-    screen.blit(playarea, ((SCREEN_X / 2) - (playarea.get_width() / 2), (SCREEN_Y / 2) - (playarea.get_height() / 2)))
+
+    # Reset playarea
+    orig_playarea.fill((200, 0, 0, 80))
 
 
     # Accept user input
@@ -57,7 +67,7 @@ while running:
             if not FULLSCREEN:
                 SCREEN_X, SCREEN_Y = event.w, event.h
                 pg.display.set_mode((SCREEN_X, SCREEN_Y), pg.RESIZABLE)
-                background = fun.scale_to_cover(origbg, SCREEN_X, SCREEN_Y)
+                background = fun.scale_to_cover(asset.origbg, SCREEN_X, SCREEN_Y)
                 playarea = fun.scale_to_fit(orig_playarea, SCREEN_X - cfg.MARGIN, SCREEN_Y - cfg.MARGIN)
 
 
@@ -67,9 +77,8 @@ while running:
             FULLSCREEN = not FULLSCREEN
             SCREEN_X = infoObject.current_w if FULLSCREEN else cfg.SCREEN_X
             SCREEN_Y = infoObject.current_h if FULLSCREEN else cfg.SCREEN_Y
-            screen = pg.display.set_mode((SCREEN_X, SCREEN_Y), pg.FULLSCREEN) if FULLSCREEN else\
-                     pg.display.set_mode((SCREEN_X, SCREEN_Y), pg.RESIZABLE)
-            background = fun.scale_to_cover(origbg, SCREEN_X, SCREEN_Y)
+            screen = pg.display.set_mode((SCREEN_X, SCREEN_Y), pg.FULLSCREEN if FULLSCREEN else pg.RESIZABLE)
+            background = fun.scale_to_cover(asset.origbg, SCREEN_X, SCREEN_Y)
             playarea = fun.scale_to_fit(orig_playarea, SCREEN_X - cfg.MARGIN, SCREEN_Y - cfg.MARGIN)
 
 
@@ -81,6 +90,20 @@ while running:
     # Store inputs in input field so it is accessable in update
     Player1.set_inputs(P1_input)
     Player2.set_inputs(P2_input)
+
+    # Update sprites
+    all_sprites.update()
+
+    # Game logic
+
+    # Draw sprites to playarea and make scaled version
+    all_sprites.draw(orig_playarea)
+    
+    playarea = fun.scale_to_fit(orig_playarea, SCREEN_X - cfg.MARGIN, SCREEN_Y - cfg.MARGIN)
+    
+    # Draw bg and game surface such that centers aligns with display center
+    screen.blit(background, ((SCREEN_X / 2) - (background.get_width() / 2), (SCREEN_Y / 2) - (background.get_height() / 2)))
+    screen.blit(playarea, ((SCREEN_X / 2) - (playarea.get_width() / 2), (SCREEN_Y / 2) - (playarea.get_height() / 2)))
 
     # Update the screen after all events have taken place
     pg.display.update()

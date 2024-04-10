@@ -2,6 +2,7 @@
 import pygame as pg
 from typing import Any
 import config as cfg
+import assets as asset
 
 class Element(pg.sprite.Sprite):
     def __init__(self, image, x, y):
@@ -44,8 +45,7 @@ class Movable_object(Element):
 
 class Player(Movable_object):
     def __init__(self, x, y):
-        super().__init__("rocket_triangle.png", x, y)
-        #self.lives = 1
+        super().__init__(asset.rocket_img, x, y)
         
         # Store inputs in field so it is accessible in update [Thrust, Shoot, Rotate]
         self.inputs = [0, 0, 0]
@@ -57,12 +57,16 @@ class Player(Movable_object):
         
     # Convert user input to changes in parameters
         # Add heading to acceleration if thrusting
-        self.acc += self.heading * self.inputs[1]
+        self.acc += self.heading * self.inputs[0] * cfg.THRUSTFORCE
         # Attempt to shoot
-        if self.inputs[2]:
+        if self.inputs[1]:
             self.shoot()
         # Add rotation input to heading angle
-        self.heading.rotate_ip(self.inputs[3])
+        self.heading.rotate_ip(-self.inputs[2] * 5)
+        new_angle = self.heading.angle_to(pg.math.Vector2(0, -1))
+        rotated_image = pg.transform.rotate(asset.rocket_img, new_angle)
+        self.rect = rotated_image.get_rect(center=self.rect.center)
+        self.image = rotated_image
         pass
 
     def set_inputs(self, input_list):
