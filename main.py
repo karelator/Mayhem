@@ -48,7 +48,7 @@ for player in player_group:
     all_sprites.add(player)
 
 # TODO: Make groups for other sprite types
-
+proj_group = pg.sprite.Group()
 
 running = True
 while running:
@@ -85,11 +85,22 @@ while running:
     # Parse player input to rockets
     keys = pg.key.get_pressed()
     # [Thrust 0/1, Shoot 0/1, Rotate -1/0/1]
-    P1_input = [keys[pg.K_w], keys[pg.K_s], keys[pg.K_a] - keys[pg.K_d]]
-    P2_input = [keys[pg.K_UP], keys[pg.K_DOWN], keys[pg.K_LEFT] - keys[pg.K_RIGHT]]
+    P1_input = [keys[pg.K_w], keys[pg.K_a] - keys[pg.K_d]]
+    P2_input = [keys[pg.K_UP], keys[pg.K_LEFT] - keys[pg.K_RIGHT]]
     # Store inputs in input field so it is accessable in update
     Player1.set_inputs(P1_input)
     Player2.set_inputs(P2_input)
+    # Handle shooting, shoot functions return projectile object if it shot
+    if keys[pg.K_s]:
+        new_proj = Player1.shoot()
+        if new_proj:
+            proj_group.add(new_proj)
+            all_sprites.add(new_proj)
+    if keys[pg.K_DOWN]:
+        new_proj = Player2.shoot()
+        if new_proj:
+            proj_group.add(new_proj)
+            all_sprites.add(new_proj)
 
     # Update sprites
     all_sprites.update()

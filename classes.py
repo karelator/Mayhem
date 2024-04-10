@@ -46,13 +46,16 @@ class Player(Movable_object):
         super().__init__(asset.rocket_img, x, y)
         
         # Store inputs in field so it is accessible in update [Thrust, Shoot, Rotate]
-        self.inputs = [0, 0, 0]
+        self.inputs = [0, 0]
+        self.frames_since_shoot = 0
         # Player is only movable object with heading angle seperate from speed, initialize to straight up
         self.heading = pg.math.Vector2(0, -1)
         
     def update(self):
         super().update()
         
+        # One more frame since rocket last shot
+        self.frames_since_shoot += 1
         # Add Gravity to acceleration
         self.add_gravity()
         # Accept player inputs
@@ -80,11 +83,8 @@ class Player(Movable_object):
     def accept_inputs(self):
         # Add heading to acceleration if thrusting
         self.acc += self.heading * self.inputs[0] * cfg.THRUSTFORCE
-        # Attempt to shoot
-        if self.inputs[1]:
-            self.shoot()
         # Add rotation input to heading angle
-        self.heading.rotate_ip(-self.inputs[2] * 5)
+        self.heading.rotate_ip(-self.inputs[1] * 5)
         new_angle = self.heading.angle_to(pg.math.Vector2(0, -1))
         rotated_image = pg.transform.rotate(asset.rocket_img, new_angle)
         self.rect = rotated_image.get_rect(center=self.rect.center)
@@ -95,11 +95,18 @@ class Player(Movable_object):
 
     # Function to handle shooting logic, spawning the projectiles and enforcing cooldown
     def shoot(self):
-        pass
+        # Cancel if not long enough since last shot
+        if self.frames_since_shoot < cfg.SHOOT_CD:
+            return None
+        self.frames_since_shoot = 0
+        new_projectile = Projectile(self.rect.centerx + self.heading.x * 20,
+                                    self.rect.centery + self.heading.y * 20, self.heading)
+        return new_projectile
 
 class Projectile(Movable_object):
-    def __init__(self, x, y):
+    def __init__(self, x, y, heading_vector):
         super().__init__(asset.projectile_img, x, y)
+        self.speed = heading_vector * cfg.BULLETSPEED
 
     def update(self):
         super().update()
