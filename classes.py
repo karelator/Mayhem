@@ -57,7 +57,29 @@ class Player(Movable_object):
         
         # Add Gravity to acceleration
         self.add_gravity()
-        # Convert user input to changes in parameters
+        # Accept player inputs
+        self.accept_inputs()
+        # Keep rocket in play area (temporary)
+        self.keep_in_screen()
+
+        pass
+
+    def keep_in_screen(self):
+        if self.rect.left < 0:
+            self.rect.left = 0
+            self.speed.x = 0
+        elif self.rect.right > cfg.PLAY_AREA_X:
+            self.rect.right = cfg.PLAY_AREA_X
+            self.speed.x = 0
+        if self.rect.top < 0:
+            self.rect.top = 0
+            self.speed.y = 0
+        elif self.rect.bottom > cfg.PLAY_AREA_Y:
+            self.rect.bottom = cfg.PLAY_AREA_Y
+            self.speed.y = 0
+
+    # Convert user input to changes in parameters
+    def accept_inputs(self):
         # Add heading to acceleration if thrusting
         self.acc += self.heading * self.inputs[0] * cfg.THRUSTFORCE
         # Attempt to shoot
@@ -69,7 +91,6 @@ class Player(Movable_object):
         rotated_image = pg.transform.rotate(asset.rocket_img, new_angle)
         self.rect = rotated_image.get_rect(center=self.rect.center)
         self.image = rotated_image
-        pass
 
     def set_inputs(self, input_list):
         self.inputs = input_list

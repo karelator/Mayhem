@@ -28,8 +28,8 @@ screen = pg.display.set_mode((SCREEN_X, SCREEN_Y), pg.FULLSCREEN) if FULLSCREEN 
 background = fun.scale_to_cover(asset.origbg, SCREEN_X, SCREEN_Y)
 
 
-# Initialize game surface to 4:3 aspect ratio and scale to fit within screen, with padding
-orig_playarea = pg.Surface((1440, 1080), pg.SRCALPHA)
+# Initialize game surface to 4:3 aspect ratio 
+orig_playarea = pg.Surface((cfg.PLAY_AREA_X, cfg.PLAY_AREA_Y), pg.SRCALPHA)
 orig_playarea.fill((200, 0, 0, 80))
  
 

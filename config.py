@@ -1,5 +1,9 @@
+# Default res at launch
 SCREEN_X = 1024
 SCREEN_Y = 768
+# Resolution for backend gameplay area calculations
+PLAY_AREA_X = 1440
+PLAY_AREA_Y = 1080 
 # Launch the application in fullscreen
 FULLSCREEN = False
 FRAMERATE = 40

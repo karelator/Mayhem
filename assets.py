@@ -5,7 +5,7 @@ BG_FILENAME = "mayhem-bg.png"
 origbg = pg.image.load(BG_FILENAME)
 # origbg.convert()
 
-# Make rocket white triangle
+# Make rocket white triangular polygon
 rocket_img = pg.Surface((40, 40), pg.SRCALPHA)
 pg.draw.polygon(rocket_img, (255, 255, 255), [(8, 40), (20, 32), (32, 40), (20, 0)], 0)
 # Add black outline
