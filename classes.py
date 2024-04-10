@@ -55,7 +55,9 @@ class Player(Movable_object):
     def update(self):
         super().update()
         
-    # Convert user input to changes in parameters
+        # Add Gravity to acceleration
+        self.add_gravity()
+        # Convert user input to changes in parameters
         # Add heading to acceleration if thrusting
         self.acc += self.heading * self.inputs[0] * cfg.THRUSTFORCE
         # Attempt to shoot
@@ -76,21 +78,23 @@ class Player(Movable_object):
     def shoot(self):
         pass
 
-class Asteroid(Movable_object):
-    def __init__(self, x, y):
-        super().__init__("asteroid_circle.png", x, y)
-
-    def update(self):
-        super().update()
-        pass
-
 class Projectile(Movable_object):
     def __init__(self, x, y):
-        super().__init__("projectile_circle.png", x, y)
+        super().__init__(asset.projectile_img, x, y)
 
     def update(self):
         super().update()
         pass
+
+
+class Asteroid(Movable_object):
+    def __init__(self, x, y):
+        super().__init__(asset.asteroid_img, x, y)
+
+    def update(self):
+        super().update()
+        pass
+
 
 class Platform(Item):
     def __init__(self, x, y):

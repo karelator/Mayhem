@@ -5,6 +5,6 @@ FULLSCREEN = False
 FRAMERATE = 40
 MARGIN = 50
 # Gravitational Force in pixels per frame
-GRAVITY = 0.05
+GRAVITY = 0.1
 # Thrusting Froce in pixels per frame
-THRUSTFORCE = .2
+THRUSTFORCE = .3
