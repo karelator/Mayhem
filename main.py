@@ -10,6 +10,7 @@ import assets as asset
 import sys
 
 if __name__ != "__main__":
+    pg.quit()
     sys.exit()
 
 # Object for monitor size
@@ -68,7 +69,7 @@ while running:
                 SCREEN_X, SCREEN_Y = event.w, event.h
                 pg.display.set_mode((SCREEN_X, SCREEN_Y), pg.RESIZABLE)
                 background = fun.scale_to_cover(asset.origbg, SCREEN_X, SCREEN_Y)
-                playarea = fun.scale_to_fit(orig_playarea, SCREEN_X - cfg.MARGIN, SCREEN_Y - cfg.MARGIN)
+                playarea = fun.scale_to_fit(orig_playarea, SCREEN_X - cfg.LR_MARGIN, SCREEN_Y - cfg.UD_MARGIN)
 
 
         # Toggle between Fullscreen and Windowed
@@ -79,7 +80,7 @@ while running:
             SCREEN_Y = infoObject.current_h if FULLSCREEN else cfg.SCREEN_Y
             screen = pg.display.set_mode((SCREEN_X, SCREEN_Y), pg.FULLSCREEN if FULLSCREEN else pg.RESIZABLE)
             background = fun.scale_to_cover(asset.origbg, SCREEN_X, SCREEN_Y)
-            playarea = fun.scale_to_fit(orig_playarea, SCREEN_X - cfg.MARGIN, SCREEN_Y - cfg.MARGIN)
+            playarea = fun.scale_to_fit(orig_playarea, SCREEN_X - cfg.LR_MARGIN, SCREEN_Y - cfg.UD_MARGIN)
 
 
     # Parse player input to rockets
@@ -105,12 +106,12 @@ while running:
     # Update sprites
     all_sprites.update()
 
-    # Game logic
+    # Game event logic 
 
     # Draw sprites to playarea and make scaled version
     all_sprites.draw(orig_playarea)
     
-    playarea = fun.scale_to_fit(orig_playarea, SCREEN_X - cfg.MARGIN, SCREEN_Y - cfg.MARGIN)
+    playarea = fun.scale_to_fit(orig_playarea, SCREEN_X - cfg.LR_MARGIN, SCREEN_Y - cfg.UD_MARGIN)
     
     # Draw bg and game surface such that centers aligns with display center
     screen.blit(background, ((SCREEN_X / 2) - (background.get_width() / 2), (SCREEN_Y / 2) - (background.get_height() / 2)))
