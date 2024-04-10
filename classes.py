@@ -3,6 +3,7 @@ import pygame as pg
 from typing import Any
 import config as cfg
 import assets as asset
+import random
 
 class Element(pg.sprite.Sprite):
     def __init__(self, image, x, y):
@@ -81,8 +82,6 @@ class Player(Movable_object):
 
     # Convert user input to changes in parameters
     def accept_inputs(self):
-        # Add heading to acceleration if thrusting
-        self.acc += self.heading * self.inputs[0] * cfg.THRUSTFORCE
         # Add rotation input to heading angle
         self.heading.rotate_ip(self.inputs[1] * 5)
         new_angle = self.heading.angle_to(pg.math.Vector2(0, -1))
@@ -93,6 +92,16 @@ class Player(Movable_object):
 
     def set_inputs(self, input_list):
         self.inputs = input_list
+
+    def thrust(self):
+        self.acc += self.heading * self.inputs[0] * cfg.THRUSTFORCE
+        smoke_list = []
+        n_smoke = random.randint(3, 5)
+        smoke_heading = (self.speed / 2) - (self.heading * cfg.SMOKESPEED)
+        for _ in range(n_smoke):
+            smoke_list.append(Smoke_Particle(self.rect.centerx, self.rect.centery, smoke_heading))
+        return smoke_list
+
 
     # Function to handle shooting logic, spawning the projectiles and enforcing cooldown
     def shoot(self):
@@ -114,6 +123,23 @@ class Projectile(Movable_object):
         super().update()
         self.add_gravity()
         pass
+
+class Smoke_Particle(Movable_object):
+    def __init__(self, x, y, avg_trajectory):
+        super().__init__(asset.smoke_particle_img, x, y)
+        self.speed = pg.math.Vector2(avg_trajectory * cfg.SMOKESPEED) * random.uniform(0.8, 1.2)
+        self.speed.rotate_ip(random.randint(-10, 10))
+        self.lifetime = 0
+
+    def update(self):
+        super().update()
+        self.lifetime += 1
+        if self.lifetime > cfg.SMOKELIFETIME:
+            self.kill()
+        else:
+            new_image = pg.Surface((11, 11), pg.SRCALPHA)
+            pg.draw.circle(new_image, (120, 120, 120, 120 * (1 - (self.lifetime/ cfg.SMOKELIFETIME))), (6, 6), 5, 0)
+            self.image = new_image
 
 
 class Asteroid(Movable_object):

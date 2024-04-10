@@ -50,6 +50,7 @@ for player in player_group:
 
 # TODO: Make groups for other sprite types
 proj_group = pg.sprite.Group()
+particle_group = pg.sprite.Group()
 
 running = True
 while running:
@@ -102,14 +103,29 @@ while running:
         if new_proj:
             proj_group.add(new_proj)
             all_sprites.add(new_proj)
+    # Handle thrusting, thrust function returns smoke particle objects
+    if keys[pg.K_w]:
+        new_smoke = Player1.thrust()
+        if new_smoke:
+            proj_group.add(new_smoke)
+            all_sprites.add(new_smoke)
+    if keys[pg.K_UP]:
+        new_smoke = Player2.thrust()
+        if new_smoke:
+            proj_group.add(new_smoke)
+            all_sprites.add(new_smoke)
+
 
     # Update sprites
     all_sprites.update()
 
     # Game event logic 
 
-    # Draw sprites to playarea and make scaled version
-    all_sprites.draw(orig_playarea)
+    # Draw sprites to playarea in correct order and make scaled version
+    proj_group.draw(orig_playarea)
+    particle_group.draw(orig_playarea)
+    player_group.draw(orig_playarea)
+    
     
     playarea = fun.scale_to_fit(orig_playarea, SCREEN_X - cfg.LR_MARGIN, SCREEN_Y - cfg.UD_MARGIN)
     

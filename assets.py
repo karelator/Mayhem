@@ -13,8 +13,11 @@ pg.draw.polygon(rocket_img, (0, 0, 0), [(8, 40), (20, 32), (32, 40), (20, 0)], 3
 
 # Add thrusting version of image
 rocket_thrusting_img = rocket_img.copy()
-pg.draw.polygon(rocket_thrusting_img, (255, 0, 0), [(14, 36), (20, 32), (26,36), (20, 40)], 0)
+pg.draw.polygon(rocket_thrusting_img, (200, 40, 0), [(14, 36), (20, 32), (26,36), (20, 40)], 0)
 
+# Smoke from thrusting
+smoke_particle_img = pg.Surface((11, 11), pg.SRCALPHA)
+pg.draw.circle(smoke_particle_img, (120, 120, 120, 120), (6, 6), 5, 0)
 
 # Make projectile img a white ball
 projectile_img = pg.Surface((11, 11), pg.SRCALPHA)

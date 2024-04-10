@@ -16,5 +16,8 @@ GRAVITY = 0.1
 THRUSTFORCE = 0.4
 # Bullet (Projectile) Speed in pixels per frame
 BULLETSPEED = 20
+# Average smoke speed from thrusting, and its lifetime
+SMOKESPEED = 2
+SMOKELIFETIME = 20
 # SHOOT COOLDOWN IN FRAMES
 SHOOT_CD = 8
