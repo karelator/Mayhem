@@ -2,16 +2,16 @@
 import pygame as pg
 from typing import Any
 import config as cfg
+import assets as asset
+import random
 
 class Element(pg.sprite.Sprite):
     def __init__(self, image, x, y):
         super().__init__()
         self.original_image = image
         self.image = image
-        self.width = self.image.get_width()
-        self.height = self.image.get_height()
-        # Initialize rect to starting position with size of width and height
-        self.rect = pg.rect.Rect(x, y, self.width, self.height)
+        # Initialize rect to image located at coords
+        self.rect = self.image.get_rect(center=(x, y))
 
 class Item(Element):
     def __init__(self, image):
@@ -44,49 +44,112 @@ class Movable_object(Element):
 
 class Player(Movable_object):
     def __init__(self, x, y):
-        super().__init__("rocket_triangle.png", x, y)
-        #self.lives = 1
+        super().__init__(asset.rocket_img, x, y)
         
         # Store inputs in field so it is accessible in update [Thrust, Shoot, Rotate]
-        self.inputs = [0, 0, 0]
+        self.inputs = [0, 0]
+        self.frames_since_shoot = 0
         # Player is only movable object with heading angle seperate from speed, initialize to straight up
         self.heading = pg.math.Vector2(0, -1)
         
     def update(self):
         super().update()
         
-    # Convert user input to changes in parameters
-        # Add heading to acceleration if thrusting
-        self.acc += self.heading * self.inputs[1]
-        # Attempt to shoot
-        if self.inputs[2]:
-            self.shoot()
-        # Add rotation input to heading angle
-        self.heading.rotate_ip(self.inputs[3])
+        # One more frame since rocket last shot
+        self.frames_since_shoot += 1
+        # Add Gravity to acceleration
+        self.add_gravity()
+        # Accept player inputs
+        self.accept_inputs()
+        # Keep rocket in play area (temporary)
+        self.keep_in_screen()
+
         pass
+
+    def keep_in_screen(self):
+        if self.rect.left < 0:
+            self.rect.left = 0
+            self.speed.x = 0
+        elif self.rect.right > cfg.PLAY_AREA_X:
+            self.rect.right = cfg.PLAY_AREA_X
+            self.speed.x = 0
+        if self.rect.top < 0:
+            self.rect.top = 0
+            self.speed.y = 0
+        elif self.rect.bottom > cfg.PLAY_AREA_Y:
+            self.rect.bottom = cfg.PLAY_AREA_Y
+            self.speed.y = 0
+
+    # Convert user input to changes in parameters
+    def accept_inputs(self):
+        # Add rotation input to heading angle
+        self.heading.rotate_ip(self.inputs[1] * 5)
+        new_angle = self.heading.angle_to(pg.math.Vector2(0, -1))
+        rotated_image = pg.transform.rotate(asset.rocket_img, new_angle) if not self.inputs[0]\
+                   else pg.transform.rotate(asset.rocket_thrusting_img, new_angle)
+        self.rect = rotated_image.get_rect(center=self.rect.center)
+        self.image = rotated_image
 
     def set_inputs(self, input_list):
         self.inputs = input_list
 
+    def thrust(self):
+        self.acc += self.heading * self.inputs[0] * cfg.THRUSTFORCE
+        smoke_list = []
+        n_smoke = random.randint(3, 5)
+        smoke_heading = (self.speed / 2) - (self.heading * cfg.SMOKESPEED)
+        for _ in range(n_smoke):
+            smoke_list.append(Smoke_Particle(self.rect.centerx, self.rect.centery, smoke_heading))
+        return smoke_list
+
+
     # Function to handle shooting logic, spawning the projectiles and enforcing cooldown
     def shoot(self):
+        # Cancel if not long enough since last shot
+        if self.frames_since_shoot < cfg.SHOOT_CD:
+            return None
+        self.frames_since_shoot = 0
+        # TODO: Consider if bullet speed should be affected by rocket velocity? Add recoil?
+        new_projectile = Projectile(self.rect.centerx + self.heading.x * 20,
+                                    self.rect.centery + self.heading.y * 20, self.heading)
+        return new_projectile
+
+class Projectile(Movable_object):
+    def __init__(self, x, y, heading_vector):
+        super().__init__(asset.projectile_img, x, y)
+        self.speed = heading_vector * cfg.BULLETSPEED
+
+    def update(self):
+        super().update()
+        self.add_gravity()
         pass
+
+class Smoke_Particle(Movable_object):
+    def __init__(self, x, y, avg_trajectory):
+        super().__init__(asset.smoke_particle_img, x, y)
+        self.speed = pg.math.Vector2(avg_trajectory * cfg.SMOKESPEED) * random.uniform(0.8, 1.2)
+        self.speed.rotate_ip(random.randint(-10, 10))
+        self.lifetime = 0
+
+    def update(self):
+        super().update()
+        self.lifetime += 1
+        if self.lifetime > cfg.SMOKELIFETIME:
+            self.kill()
+        else:
+            new_image = pg.Surface((11, 11), pg.SRCALPHA)
+            pg.draw.circle(new_image, (120, 120, 120, 120 * (1 - (self.lifetime/ cfg.SMOKELIFETIME))), (6, 6), 5, 0)
+            self.image = new_image
+
 
 class Asteroid(Movable_object):
     def __init__(self, x, y):
-        super().__init__("asteroid_circle.png", x, y)
+        super().__init__(asset.asteroid_img, x, y)
 
     def update(self):
         super().update()
         pass
 
-class Projectile(Movable_object):
-    def __init__(self, x, y):
-        super().__init__("projectile_circle.png", x, y)
-
-    def update(self):
-        super().update()
-        pass
 
 class Platform(Item):
     def __init__(self, x, y):
