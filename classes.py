@@ -86,7 +86,8 @@ class Player(Movable_object):
         # Add rotation input to heading angle
         self.heading.rotate_ip(self.inputs[1] * 5)
         new_angle = self.heading.angle_to(pg.math.Vector2(0, -1))
-        rotated_image = pg.transform.rotate(asset.rocket_img, new_angle)
+        rotated_image = pg.transform.rotate(asset.rocket_img, new_angle) if not self.inputs[0]\
+                   else pg.transform.rotate(asset.rocket_thrusting_img, new_angle)
         self.rect = rotated_image.get_rect(center=self.rect.center)
         self.image = rotated_image
 
