@@ -84,7 +84,7 @@ class Player(Movable_object):
         # Add heading to acceleration if thrusting
         self.acc += self.heading * self.inputs[0] * cfg.THRUSTFORCE
         # Add rotation input to heading angle
-        self.heading.rotate_ip(-self.inputs[1] * 5)
+        self.heading.rotate_ip(self.inputs[1] * 5)
         new_angle = self.heading.angle_to(pg.math.Vector2(0, -1))
         rotated_image = pg.transform.rotate(asset.rocket_img, new_angle)
         self.rect = rotated_image.get_rect(center=self.rect.center)
@@ -99,7 +99,7 @@ class Player(Movable_object):
         if self.frames_since_shoot < cfg.SHOOT_CD:
             return None
         self.frames_since_shoot = 0
-        # TODO: Consider if bullet speed should be affected by rocket velocity?
+        # TODO: Consider if bullet speed should be affected by rocket velocity? Add recoil?
         new_projectile = Projectile(self.rect.centerx + self.heading.x * 20,
                                     self.rect.centery + self.heading.y * 20, self.heading)
         return new_projectile
@@ -111,6 +111,7 @@ class Projectile(Movable_object):
 
     def update(self):
         super().update()
+        self.add_gravity()
         pass
 
 

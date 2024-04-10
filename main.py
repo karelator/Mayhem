@@ -86,8 +86,8 @@ while running:
     # Parse player input to rockets
     keys = pg.key.get_pressed()
     # [Thrust 0/1, Shoot 0/1, Rotate -1/0/1]
-    P1_input = [keys[pg.K_w], keys[pg.K_a] - keys[pg.K_d]]
-    P2_input = [keys[pg.K_UP], keys[pg.K_LEFT] - keys[pg.K_RIGHT]]
+    P1_input = [keys[pg.K_w], keys[pg.K_d] - keys[pg.K_a]]
+    P2_input = [keys[pg.K_UP], keys[pg.K_RIGHT] - keys[pg.K_LEFT]]
     # Store inputs in input field so it is accessable in update
     Player1.set_inputs(P1_input)
     Player2.set_inputs(P2_input)

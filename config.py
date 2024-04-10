@@ -13,7 +13,7 @@ UD_MARGIN = 50 # Up/Down
 # Gravitational Force in pixels per frame
 GRAVITY = 0.1
 # Thrusting Froce in pixels per frame
-THRUSTFORCE = .3
+THRUSTFORCE = 0.4
 # Bullet (Projectile) Speed in pixels per frame
 BULLETSPEED = 20
 # SHOOT COOLDOWN IN FRAMES
