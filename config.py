@@ -13,6 +13,6 @@ GRAVITY = 0.1
 # Thrusting Froce in pixels per frame
 THRUSTFORCE = .3
 # Bullet (Projectile) Speed in pixels per frame
-BULLETSPEED = 5
+BULLETSPEED = 10
 # SHOOT COOLDOWN IN FRAMES
 SHOOT_CD = 20

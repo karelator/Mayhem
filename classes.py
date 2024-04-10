@@ -99,6 +99,7 @@ class Player(Movable_object):
         if self.frames_since_shoot < cfg.SHOOT_CD:
             return None
         self.frames_since_shoot = 0
+        # TODO: Consider if bullet speed should be affected by rocket velocity?
         new_projectile = Projectile(self.rect.centerx + self.heading.x * 20,
                                     self.rect.centery + self.heading.y * 20, self.heading)
         return new_projectile

@@ -91,12 +91,12 @@ while running:
     Player1.set_inputs(P1_input)
     Player2.set_inputs(P2_input)
     # Handle shooting, shoot functions return projectile object if it shot
-    if keys[pg.K_s]:
+    if keys[pg.K_LSHIFT] or keys[pg.K_s]:
         new_proj = Player1.shoot()
         if new_proj:
             proj_group.add(new_proj)
             all_sprites.add(new_proj)
-    if keys[pg.K_DOWN]:
+    if keys[pg.K_SPACE] or keys[pg.K_DOWN]:
         new_proj = Player2.shoot()
         if new_proj:
             proj_group.add(new_proj)
