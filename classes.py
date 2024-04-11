@@ -5,7 +5,7 @@ import config as cfg
 import assets as asset
 import random
 
-class Element(pg.sprite.Sprite):
+class Sprite(pg.sprite.Sprite):
     def __init__(self, image, x, y):
         super().__init__()
         self.original_image = image
@@ -13,7 +13,7 @@ class Element(pg.sprite.Sprite):
         # Initialize rect to image located at coords
         self.rect = self.image.get_rect(center=(x, y))
 
-class Item(Element):
+class Level_Design(Sprite):
     def __init__(self, image):
         super().__init__(image)
     
@@ -21,7 +21,7 @@ class Item(Element):
         pass
 
 
-class Movable_object(Element):
+class Movable_object(Sprite):
     def __init__(self, image, x, y):
         super().__init__(image, x, y)
         self.speed = pg.math.Vector2()
@@ -96,10 +96,11 @@ class Player(Movable_object):
     def thrust(self):
         self.acc += self.heading * self.inputs[0] * cfg.THRUSTFORCE
         smoke_list = []
-        n_smoke = random.randint(3, 5)
-        smoke_heading = (self.speed / 2) - (self.heading * cfg.SMOKESPEED)
-        for _ in range(n_smoke):
-            smoke_list.append(Smoke_Particle(self.rect.centerx, self.rect.centery, smoke_heading))
+        if cfg.SMOKE:
+            n_smoke = random.randint(3, 5)
+            smoke_heading = (self.speed / 2) - (self.heading * cfg.SMOKESPEED)
+            for _ in range(n_smoke):
+                smoke_list.append(Smoke_Particle(self.rect.centerx, self.rect.centery, smoke_heading))
         return smoke_list
 
 
@@ -143,18 +144,33 @@ class Smoke_Particle(Movable_object):
 
 
 class Asteroid(Movable_object):
-    def __init__(self, x, y):
-        super().__init__(asset.asteroid_img, x, y)
+    def __init__(self):
+        # Spawn 50 pixels above the screen, with random x val
+        super().__init__(asset.asteroid_img, random.randint(0, int(cfg.PLAY_AREA_X * 1.2)), -50)
+        random_dir = pg.math.Vector2(0, 1)
+        random_dir.rotate_ip(random.randint(5, 30))
+        random_speed = random.uniform(5, 10)
+        self.speed = random_dir * random_speed
+
 
     def update(self):
         super().update()
+        self.add_gravity()
+        if self.rect.top > cfg.PLAY_AREA_Y:
+            self.kill()
         pass
 
 
-class Platform(Item):
+class Platform(Level_Design):
     def __init__(self, x, y):
         super().__init__("platform_base.png", x, y)
     
     def update(self):
         super().update()
         pass
+
+class Wall(Level_Design):
+    def __init__(self, x1, x2, y1, y2):
+        new_wall = pg.Surface((x2-x1, y2-y1))
+        new_wall.fill((100, 50, 0))
+        super().__init__(new_wall, (x1+x2)/2, (y1+y2)/2)

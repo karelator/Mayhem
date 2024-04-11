@@ -26,5 +26,5 @@ pg.draw.circle(projectile_img, (255, 255, 255), (6, 6), 5, 0)
 pg.draw.circle(projectile_img, (0, 0, 0), (6, 6), 5, 1)
 
 # Make asteroid img a dark greyish circle
-asteroid_img = pg.Surface((41, 41), pg.SRCALPHA)
-pg.draw.circle(asteroid_img, (20, 20, 20), (21, 21), 20, 0)
+asteroid_img = pg.Surface((61, 61), pg.SRCALPHA)
+pg.draw.circle(asteroid_img, (38, 30, 33), (31, 31), 30, 0)

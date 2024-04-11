@@ -6,8 +6,10 @@ import config as cfg
 import functions as fun
 import classes as c
 import assets as asset
+import levels as lvl
 # Used for making sure code is exited fully when game is closed
 import sys
+import random 
 
 if __name__ != "__main__":
     pg.quit()
@@ -51,13 +53,16 @@ for player in player_group:
 # TODO: Make groups for other sprite types
 proj_group = pg.sprite.Group()
 particle_group = pg.sprite.Group()
+asteroid_group = pg.sprite.Group()
+wall_group = pg.sprite.Group()
+
+
 
 running = True
 while running:
 
     # Reset playarea
     orig_playarea.fill((250, 0, 0, 90))
-
 
     # Accept user input
     for event in pg.event.get():
@@ -107,12 +112,12 @@ while running:
     if keys[pg.K_w]:
         new_smoke = Player1.thrust()
         if new_smoke:
-            proj_group.add(new_smoke)
+            particle_group.add(new_smoke)
             all_sprites.add(new_smoke)
     if keys[pg.K_UP]:
         new_smoke = Player2.thrust()
         if new_smoke:
-            proj_group.add(new_smoke)
+            particle_group.add(new_smoke)
             all_sprites.add(new_smoke)
 
 
@@ -120,12 +125,19 @@ while running:
     all_sprites.update()
 
     # Game event logic 
+    
+    # Attempt to spawn asteroid
+    if cfg.ASTEROIDS:
+        if not random.randint(0, cfg.ASTEROID_SPAWNRATE):
+            new_asteroid = c.Asteroid()
+            asteroid_group.add(new_asteroid)
+            all_sprites.add(new_asteroid)
 
     # Draw sprites to playarea in correct order and make scaled version
+    asteroid_group.draw(orig_playarea)
     proj_group.draw(orig_playarea)
     particle_group.draw(orig_playarea)
     player_group.draw(orig_playarea)
-    
     
     playarea = fun.scale_to_fit(orig_playarea, SCREEN_X - cfg.LR_MARGIN, SCREEN_Y - cfg.UD_MARGIN)
     
