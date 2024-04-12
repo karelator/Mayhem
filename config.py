@@ -4,8 +4,6 @@ SCREEN_Y = 720
 # Resolution for backend gameplay area calculations
 PLAY_AREA_X = 1440
 PLAY_AREA_Y = 1080 
-# Launch the application in fullscreen
-FULLSCREEN = False
 FRAMERATE = 40
 # Margin to make game less crowded
 LR_MARGIN = 50 # Left/Right

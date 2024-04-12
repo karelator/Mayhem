@@ -13,14 +13,6 @@ class Sprite(pg.sprite.Sprite):
         # Initialize rect to image located at coords
         self.rect = self.image.get_rect(center=(x, y))
 
-class Level_Design(Sprite):
-    def __init__(self, image):
-        super().__init__(image)
-    
-    def update(self):
-        pass
-
-
 class Movable_object(Sprite):
     def __init__(self, image, x, y):
         super().__init__(image, x, y)
@@ -161,6 +153,14 @@ class Asteroid(Movable_object):
         pass
 
 
+class Level_Design(Sprite):
+    def __init__(self, image, x, y):
+        super().__init__(image, x, y)
+    
+    def update(self):
+        pass
+
+
 class Platform(Level_Design):
     def __init__(self, x, y):
         super().__init__("platform_base.png", x, y)
@@ -172,5 +172,5 @@ class Platform(Level_Design):
 class Wall(Level_Design):
     def __init__(self, x1, x2, y1, y2):
         new_wall = pg.Surface((x2-x1, y2-y1))
-        new_wall.fill((100, 50, 0))
+        new_wall.fill((255, 255, 255))
         super().__init__(new_wall, (x1+x2)/2, (y1+y2)/2)
