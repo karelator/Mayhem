@@ -3,7 +3,6 @@ import pygame as pg
 from typing import Any
 import config as cfg
 import assets as asset
-import levels as lvls
 import main as main
 import random
 
@@ -57,18 +56,8 @@ class Player(Movable_object):
         self.accept_inputs()
         # Keep rocket in play area (temporary)
         self.keep_in_screen()
+        self.crash()
 
-        #Collision detection with walls
-        for wall in main.wall_group:
-            if pg.sprite.collide_rect(self, wall):
-                self.kill()
-                return
-        
-        #Collision detection with other player
-        for player in main.player_group:
-            if pg.sprite.collide_rect(self, player):
-                self.kill()
-                return 
         pass
 
     def keep_in_screen(self):
@@ -119,6 +108,22 @@ class Player(Movable_object):
         new_projectile = Projectile(self.rect.centerx + self.heading.x * 20,
                                     self.rect.centery + self.heading.y * 20, self.heading)
         return new_projectile
+    
+
+    #Function to handle collisions between sprites
+    def crash(self):
+        #Collision detection with walls
+        for wall in main.wall_group:
+            if pg.sprite.collide_rect(self, wall):
+                self.kill()
+                return
+        
+        #Collision detection with other player
+        for player in main.player_group:
+            if pg.sprite.collide_rect(self, player):
+                self.kill()
+                return 
+
 
 class Projectile(Movable_object):
     def __init__(self, x, y, heading_vector):
