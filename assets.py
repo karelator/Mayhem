@@ -3,7 +3,6 @@ import pygame as pg
 
 BG_FILENAME = "mayhem-bg.png"
 origbg = pg.image.load(BG_FILENAME)
-# origbg.convert()
 
 # Make rocket white triangular polygon
 rocket_img = pg.Surface((40, 40), pg.SRCALPHA)
@@ -25,6 +24,10 @@ pg.draw.circle(projectile_img, (255, 255, 255), (6, 6), 5, 0)
 # Add black outline
 pg.draw.circle(projectile_img, (0, 0, 0), (6, 6), 5, 1)
 
-# Make asteroid img a dark greyish circle
-asteroid_img = pg.Surface((41, 41), pg.SRCALPHA)
-pg.draw.circle(asteroid_img, (20, 20, 20), (21, 21), 20, 0)
+# Make asteroid img a circle
+asteroid_img = pg.Surface((61, 61), pg.SRCALPHA)
+pg.draw.circle(asteroid_img, (108, 50, 83), (31, 31), 30, 0)
+
+# Make platform a grey rectangle
+platform_img = pg.Surface((50, 5), pg.SRCALPHA)
+platform_img.fill((38, 30, 33))
