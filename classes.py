@@ -3,6 +3,8 @@ import pygame as pg
 from typing import Any
 import config as cfg
 import assets as asset
+import levels as lvls
+import main as main
 import random
 
 class Sprite(pg.sprite.Sprite):
@@ -56,6 +58,17 @@ class Player(Movable_object):
         # Keep rocket in play area (temporary)
         self.keep_in_screen()
 
+        #Collision detection with walls
+        for wall in main.wall_group:
+            if pg.sprite.collide_rect(self, wall):
+                self.kill()
+                return
+        
+        #Collision detection with other player
+        for player in main.player_group:
+            if pg.sprite.collide_rect(self, player):
+                self.kill()
+                return 
         pass
 
     def keep_in_screen(self):
