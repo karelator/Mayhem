@@ -95,7 +95,6 @@ class Game():
                     self.screen = pg.display.set_mode((self.SCREEN_X, self.SCREEN_Y), pg.FULLSCREEN if self.FULLSCREEN else pg.RESIZABLE)
                     self.background = fun.scale_to_cover(asset.origbg, self.SCREEN_X, self.SCREEN_Y)
                     self.background.convert()
-                    self.screen.blit(self.background, (0, 0))
                     self.playarea = fun.scale_to_fit(self.orig_playarea, self.SCREEN_X - cfg.LR_MARGIN, self.SCREEN_Y - cfg.UD_MARGIN)
 
 
@@ -134,8 +133,36 @@ class Game():
             # Update sprites
             self.all_sprites.update()
 
-            # Game event logic 
+            # Game collision logic
+
+            for sprite in self.all_sprites:
+                collisions = pg.sprite.spritecollide(sprite, self.all_sprites, False)
+                for hit in collisions:
+                    if hit == sprite:
+                        continue
+                    # Player collisions
+                    if isinstance(sprite, c.Player):
+                        if isinstance(hit, c.Wall):
+                            sprite.kill()
+                        elif isinstance(hit, c.Player):
+                            sprite.kill()
+                            hit.kill()
+                        elif isinstance(hit, c.Projectile):
+                            sprite.kill()
+                            hit.kill()
+                        elif isinstance(hit, c.Asteroid):
+                            sprite.kill()
+                    # Bullet collision
+                    if isinstance(sprite, c.Projectile):
+                        if isinstance(hit, c.Wall):
+                            sprite.kill()
+
+
+                        
             
+
+            # Other game event logic 
+
             # Attempt to spawn asteroid
             if cfg.ASTEROIDS:
                 if not random.randint(0, cfg.ASTEROID_SPAWNRATE):
@@ -162,6 +189,8 @@ class Game():
         pg.quit()
         sys.exit()
 
+Game1 = Game()
+
 if __name__ == "__main__":
-    cProfile.run("Game().run()")
+    cProfile.run("Game1.run()")
     

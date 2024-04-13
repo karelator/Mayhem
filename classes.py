@@ -3,7 +3,6 @@ import pygame as pg
 from typing import Any
 import config as cfg
 import assets as asset
-import main as main
 import random
 
 class Sprite(pg.sprite.Sprite):
@@ -56,8 +55,6 @@ class Player(Movable_object):
         self.accept_inputs()
         # Keep rocket in play area (temporary)
         self.keep_in_screen()
-        self.crash()
-
         pass
 
     def keep_in_screen(self):
@@ -105,24 +102,9 @@ class Player(Movable_object):
             return None
         self.frames_since_shoot = 0
         # TODO: Consider if bullet speed should be affected by rocket velocity? Add recoil?
-        new_projectile = Projectile(self.rect.centerx + self.heading.x * 20,
-                                    self.rect.centery + self.heading.y * 20, self.heading)
+        new_projectile = Projectile(self.rect.centerx + self.heading.x * 50,
+                                    self.rect.centery + self.heading.y * 50, self.heading)
         return new_projectile
-    
-
-    #Function to handle collisions between sprites
-    def crash(self):
-        #Collision detection with walls
-        for wall in main.wall_group:
-            if pg.sprite.collide_rect(self, wall):
-                self.kill()
-                return
-        
-        #Collision detection with other player
-        for player in main.player_group:
-            if pg.sprite.collide_rect(self, player):
-                self.kill()
-                return 
 
 
 class Projectile(Movable_object):
