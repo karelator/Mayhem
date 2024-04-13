@@ -31,15 +31,15 @@ class Movable_object(Sprite):
         pass
 
     # Make gravity calculation available for all movable objects, consider usage object by object
-    def add_gravity(self):
+    def add_gravity(self, multiplier=1):
         # Adjust speed GRAVITY pixels down per frame
-        self.acc.y += cfg.GRAVITY
+        self.acc.y += cfg.GRAVITY * multiplier
 
 class Player(Movable_object):
     def __init__(self, x, y):
         super().__init__(asset.rocket_img, x, y)
         
-        # Store inputs in field so it is accessible in update [Thrust, Shoot, Rotate]
+        # Store inputs in field so it is accessible in update [Thrust, Rotate]
         self.inputs = [0, 0]
         self.frames_since_shoot = 0
         # Player is only movable object with heading angle seperate from speed, initialize to straight up
@@ -71,6 +71,9 @@ class Player(Movable_object):
         elif self.rect.bottom > cfg.PLAY_AREA_Y:
             self.rect.bottom = cfg.PLAY_AREA_Y
             self.speed.y = 0
+    
+    def is_thrusting(self):
+        return self.inputs[0]
 
     # Convert user input to changes in parameters
     def accept_inputs(self):

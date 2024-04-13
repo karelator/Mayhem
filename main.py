@@ -25,6 +25,7 @@ class Game():
 
         # Initialize screen depending on launched with fullscreen or not
         self.screen = pg.display.set_mode((self.SCREEN_X, self.SCREEN_Y), pg.RESIZABLE)
+        pg.display.set_caption("Budget Blastoff")
 
         # Initialize background object and scale to cover screen
 
@@ -56,12 +57,16 @@ class Game():
         self.particle_group = pg.sprite.Group()
         self.asteroid_group = pg.sprite.Group()
         self.wall_group = pg.sprite.Group()
+        self.platform_group = pg.sprite.Group()
 
     def run(self):
 
-        lvl1_walls = lvl.lvl1()
+        lvl1_walls, lvl1_platforms = lvl.lvl1()
         self.wall_group.add(lvl1_walls)
         self.all_sprites.add(lvl1_walls)
+        self.platform_group.add(lvl1_platforms)
+        self.all_sprites.add(lvl1_platforms)
+        
 
         running = True
         while running:
@@ -158,6 +163,17 @@ class Game():
                             hit.kill()
                         elif isinstance(hit, c.Asteroid):
                             sprite.kill()
+                        elif isinstance(hit, c.Platform): # Check if landing conditions are met
+                            if abs(sprite.heading.angle_to((0, -1))) > cfg.SAFELANDING_ANGLE  or sprite.speed.length_squared() > cfg.SAFELANDING_SPEED**2:
+                                sprite.kill()
+                            sprite.acc *= 0
+                            if sprite.is_thrusting():
+                                sprite.thrust
+                            else: 
+                                sprite.rect.bottom = hit.rect.top
+                                sprite.speed *= 0
+                                
+
                     # Bullet collision
                     if isinstance(sprite, c.Projectile):
                         if isinstance(hit, c.Wall):
@@ -182,6 +198,7 @@ class Game():
             self.particle_group.draw(self.orig_playarea)
             self.player_group.draw(self.orig_playarea)
             self.wall_group.draw(self.orig_playarea)
+            self.platform_group.draw(self.orig_playarea)
             
             self.playarea = fun.scale_to_fit(self.orig_playarea, self.SCREEN_X - cfg.LR_MARGIN, self.SCREEN_Y - cfg.UD_MARGIN)
             

@@ -20,4 +20,7 @@ def lvl1():
     walls.append(c.Wall(0, 250, cfg.PLAY_AREA_Y - 240, cfg.PLAY_AREA_Y - 200))
     # Lower Right
     walls.append(c.Wall(cfg.PLAY_AREA_X - 250, cfg.PLAY_AREA_X, cfg.PLAY_AREA_Y - 240, cfg.PLAY_AREA_Y - 200))
-    return walls
+
+    platforms = [c.Platform(100, cfg.PLAY_AREA_Y - 240), c.Platform(1340, cfg.PLAY_AREA_Y - 240)]
+
+    return (walls, platforms)

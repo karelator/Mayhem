@@ -29,5 +29,5 @@ asteroid_img = pg.Surface((61, 61), pg.SRCALPHA)
 pg.draw.circle(asteroid_img, (108, 50, 83), (31, 31), 30, 0)
 
 # Make platform a grey rectangle
-platform_img = pg.Surface((50, 5), pg.SRCALPHA)
+platform_img = pg.Surface((75, 12), pg.SRCALPHA)
 platform_img.fill((38, 30, 33))

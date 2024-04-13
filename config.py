@@ -12,6 +12,9 @@ UD_MARGIN = 50 # Up/Down
 GRAVITY = 0.1
 # Thrusting Froce in pixels per frame
 THRUSTFORCE = 0.4
+# Safe speed and angle for landing on platforms
+SAFELANDING_SPEED = 3
+SAFELANDING_ANGLE = 25
 # Bullet (Projectile) Speed in pixels per frame
 BULLETSPEED = 20
 # Toggle smoke, Average smoke speed from thrusting, and its lifetime
