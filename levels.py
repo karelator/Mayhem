@@ -12,4 +12,12 @@ def border():
 
 def lvl1():
     walls = border()
+    # Middle box
+    walls.append(c.Wall(500, cfg.PLAY_AREA_X - 500, 520, cfg.PLAY_AREA_Y - 520))
+    # Lower middle box
+    walls.append(c.Wall(700, cfg.PLAY_AREA_X - 700, 700, cfg.PLAY_AREA_Y - 200))
+    # Lower left
+    walls.append(c.Wall(0, 250, cfg.PLAY_AREA_Y - 240, cfg.PLAY_AREA_Y - 200))
+    # Lower Right
+    walls.append(c.Wall(cfg.PLAY_AREA_X - 250, cfg.PLAY_AREA_X, cfg.PLAY_AREA_Y - 240, cfg.PLAY_AREA_Y - 200))
     return walls

@@ -142,6 +142,12 @@ class Game():
                         continue
                     # Player collisions
                     if isinstance(sprite, c.Player):
+                        # Update masks before check
+                        sprite.mask = pg.mask.from_surface(sprite.image)
+                        hit.mask = pg.mask.from_surface(hit.image)
+                        if not pg.sprite.collide_mask(sprite, hit):
+                            continue
+                        # Differentiate between events
                         if isinstance(hit, c.Wall):
                             sprite.kill()
                         elif isinstance(hit, c.Player):

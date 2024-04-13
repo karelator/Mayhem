@@ -10,6 +10,7 @@ class Sprite(pg.sprite.Sprite):
         super().__init__()
         self.original_image = image
         self.image = image
+        self.mask = pg.mask.from_surface(self.image)
         # Initialize rect to image located at coords
         self.rect = self.image.get_rect(center=(x, y))
 
@@ -54,7 +55,7 @@ class Player(Movable_object):
         # Accept player inputs
         self.accept_inputs()
         # Keep rocket in play area (temporary)
-        self.keep_in_screen()
+        #self.keep_in_screen()
         pass
 
     def keep_in_screen(self):
@@ -163,7 +164,7 @@ class Level_Design(Sprite):
 
 class Platform(Level_Design):
     def __init__(self, x, y):
-        super().__init__("platform_base.png", x, y)
+        super().__init__(asset.platform_img, x, y)
     
     def update(self):
         super().update()
