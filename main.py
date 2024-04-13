@@ -93,6 +93,7 @@ class Game():
 
                 # Toggle between Fullscreen and Windowed
                 elif event.type == pg.KEYDOWN and event.key == pg.K_F11:
+                    self.toggle_fullscreen()
                     # Toggle Fullscreen bool
                     self.FULLSCREEN = not self.FULLSCREEN
                     self.SCREEN_X = self.infoObject.current_w if self.FULLSCREEN else cfg.SCREEN_X
@@ -101,6 +102,9 @@ class Game():
                     self.background = fun.scale_to_cover(asset.origbg, self.SCREEN_X, self.SCREEN_Y)
                     self.background.convert()
                     self.playarea = fun.scale_to_fit(self.orig_playarea, self.SCREEN_X - cfg.LR_MARGIN, self.SCREEN_Y - cfg.UD_MARGIN)
+
+                elif event.type == pg.KEYDOWN and event.key == pg.K_r:
+                    self.restart()
 
 
             # Parse player input to rockets
@@ -211,6 +215,37 @@ class Game():
 
         pg.quit()
         sys.exit()
+
+    def restart(self):
+
+        # Initialize screen depending on launched with fullscreen or not
+        self.screen = pg.display.set_mode((self.SCREEN_X, self.SCREEN_Y), pg.RESIZABLE)
+
+        # Initialize game surface to 4:3 aspect ratio 
+        self.orig_playarea = pg.Surface((cfg.PLAY_AREA_X, cfg.PLAY_AREA_Y), pg.SRCALPHA)
+        self.orig_playarea.fill((0, 0, 0, 0))
+        self.playarea = self.orig_playarea
+
+        # Empty sprite list
+        self.all_sprites = pg.sprite.Group()
+
+        # Initialize the two players
+        self.Player1 = c.Player(100, 800)
+        self.Player2 = c.Player(1340, 800)
+
+        # Make group for player sprites, then add to all sprite group
+        self.player_group = pg.sprite.Group(self.Player1, self.Player2)
+        for player in self.player_group:
+            self.all_sprites.add(player)
+
+        # Empty other sprite lists
+        self.proj_group = pg.sprite.Group()
+        self.particle_group = pg.sprite.Group()
+        self.asteroid_group = pg.sprite.Group()
+        self.wall_group = pg.sprite.Group()
+        self.platform_group = pg.sprite.Group()
+        self.run()
+
 
 Game1 = Game()
 
