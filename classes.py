@@ -44,18 +44,27 @@ class Player(Movable_object):
         self.frames_since_shoot = 0
         # Player is only movable object with heading angle seperate from speed, initialize to straight up
         self.heading = pg.math.Vector2(0, -1)
+        # Starting value for fuel
+        self.fuel_storage = cfg.START_FUEL
+        # Initialize score value
+        self.score = 0
         
     def update(self):
         super().update()
         
         # One more frame since rocket last shot
         self.frames_since_shoot += 1
+        # Decrease fuel
+        self.fuel_storage -= cfg.FUEL_DRATE
         # Add Gravity to acceleration
         self.add_gravity()
         # Accept player inputs
         self.accept_inputs()
         # Keep rocket in play area (temporary)
+
         #self.keep_in_screen()
+        self.keep_in_screen()
+
         pass
 
     def keep_in_screen(self):

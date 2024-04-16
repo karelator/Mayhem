@@ -26,3 +26,7 @@ SMOKELIFETIME = 20
 # Turn on/off asteroids, spawnrate in average frames between each spawn
 ASTEROIDS = True
 ASTEROID_SPAWNRATE = 250
+# Fuel configurations (Droprate, starting fuel and spawnrate)
+FUEL_DRATE = 0.25
+START_FUEL = 1000
+FUEL_SPAWNRATE = 250

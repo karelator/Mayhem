@@ -31,3 +31,7 @@ pg.draw.circle(asteroid_img, (108, 50, 83), (31, 31), 30, 0)
 # Make platform a grey rectangle
 platform_img = pg.Surface((75, 12), pg.SRCALPHA)
 platform_img.fill((38, 30, 33))
+
+# Make fuel img a red square
+fuel_img = pg.surface((20, 20), pg.SRCALPHA)
+fuel_img.fill((255,57,57))
