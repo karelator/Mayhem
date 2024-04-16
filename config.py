@@ -1,6 +1,6 @@
 # Default res at launch
-SCREEN_X = 1080
-SCREEN_Y = 720
+SCREEN_X = 1080 # 1080 2560
+SCREEN_Y = 720 # 720 1440
 # Resolution for backend gameplay area calculations
 PLAY_AREA_X = 1440
 PLAY_AREA_Y = 1080 
@@ -12,14 +12,17 @@ UD_MARGIN = 50 # Up/Down
 GRAVITY = 0.1
 # Thrusting Froce in pixels per frame
 THRUSTFORCE = 0.4
-# Bullet (Projectile) Speed in pixels per frame
+# Safe speed and angle for landing on platforms
+SAFELANDING_SPEED = 3
+SAFELANDING_ANGLE = 25
+# Bullet (Projectile) Speed in pixels per frame, SHOOT COOLDOWN IN FRAMES
 BULLETSPEED = 20
+SHOOT_CD = 12
 # Toggle smoke, Average smoke speed from thrusting, and its lifetime
 SMOKE = True
 SMOKESPEED = 2
 SMOKELIFETIME = 20
-# SHOOT COOLDOWN IN FRAMES
-SHOOT_CD = 8
+
 # Turn on/off asteroids, spawnrate in average frames between each spawn
 ASTEROIDS = True
 ASTEROID_SPAWNRATE = 250

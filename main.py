@@ -25,6 +25,7 @@ class Game():
 
         # Initialize screen depending on launched with fullscreen or not
         self.screen = pg.display.set_mode((self.SCREEN_X, self.SCREEN_Y), pg.RESIZABLE)
+        pg.display.set_caption("Budget Blastoff")
 
         # Initialize background object and scale to cover screen
 
@@ -56,12 +57,16 @@ class Game():
         self.particle_group = pg.sprite.Group()
         self.asteroid_group = pg.sprite.Group()
         self.wall_group = pg.sprite.Group()
+        self.platform_group = pg.sprite.Group()
 
     def run(self):
 
-        lvl1_walls = lvl.lvl1()
+        lvl1_walls, lvl1_platforms = lvl.lvl1()
         self.wall_group.add(lvl1_walls)
         self.all_sprites.add(lvl1_walls)
+        self.platform_group.add(lvl1_platforms)
+        self.all_sprites.add(lvl1_platforms)
+        
 
         running = True
         while running:
@@ -88,6 +93,7 @@ class Game():
 
                 # Toggle between Fullscreen and Windowed
                 elif event.type == pg.KEYDOWN and event.key == pg.K_F11:
+                    self.toggle_fullscreen()
                     # Toggle Fullscreen bool
                     self.FULLSCREEN = not self.FULLSCREEN
                     self.SCREEN_X = self.infoObject.current_w if self.FULLSCREEN else cfg.SCREEN_X
@@ -95,8 +101,10 @@ class Game():
                     self.screen = pg.display.set_mode((self.SCREEN_X, self.SCREEN_Y), pg.FULLSCREEN if self.FULLSCREEN else pg.RESIZABLE)
                     self.background = fun.scale_to_cover(asset.origbg, self.SCREEN_X, self.SCREEN_Y)
                     self.background.convert()
-                    self.screen.blit(self.background, (0, 0))
                     self.playarea = fun.scale_to_fit(self.orig_playarea, self.SCREEN_X - cfg.LR_MARGIN, self.SCREEN_Y - cfg.UD_MARGIN)
+
+                elif event.type == pg.KEYDOWN and event.key == pg.K_r:
+                    self.restart()
 
 
             # Parse player input to rockets
@@ -134,8 +142,53 @@ class Game():
             # Update sprites
             self.all_sprites.update()
 
-            # Game event logic 
+            # Game collision logic
+
+            for sprite in self.all_sprites:
+                collisions = pg.sprite.spritecollide(sprite, self.all_sprites, False)
+                for hit in collisions:
+                    if hit == sprite:
+                        continue
+                    # Player collisions
+                    if isinstance(sprite, c.Player):
+                        # Update masks before check
+                        sprite.mask = pg.mask.from_surface(sprite.image)
+                        hit.mask = pg.mask.from_surface(hit.image)
+                        if not pg.sprite.collide_mask(sprite, hit):
+                            continue
+                        # Differentiate between events
+                        if isinstance(hit, c.Wall):
+                            sprite.kill()
+                        elif isinstance(hit, c.Player):
+                            sprite.kill()
+                            hit.kill()
+                        elif isinstance(hit, c.Projectile):
+                            sprite.kill()
+                            hit.kill()
+                        elif isinstance(hit, c.Asteroid):
+                            sprite.kill()
+                        elif isinstance(hit, c.Platform): # Check if landing conditions are met
+                            if abs(sprite.heading.angle_to((0, -1))) > cfg.SAFELANDING_ANGLE  or sprite.speed.length_squared() > cfg.SAFELANDING_SPEED**2:
+                                sprite.kill()
+                            sprite.acc *= 0
+                            if sprite.is_thrusting():
+                                sprite.thrust
+                            else: 
+                                sprite.rect.bottom = hit.rect.top
+                                sprite.speed *= 0
+                                
+
+                    # Bullet collision
+                    if isinstance(sprite, c.Projectile):
+                        if isinstance(hit, c.Wall):
+                            sprite.kill()
+
+
+                        
             
+
+            # Other game event logic 
+
             # Attempt to spawn asteroid
             if cfg.ASTEROIDS:
                 if not random.randint(0, cfg.ASTEROID_SPAWNRATE):
@@ -149,6 +202,7 @@ class Game():
             self.particle_group.draw(self.orig_playarea)
             self.player_group.draw(self.orig_playarea)
             self.wall_group.draw(self.orig_playarea)
+            self.platform_group.draw(self.orig_playarea)
             
             self.playarea = fun.scale_to_fit(self.orig_playarea, self.SCREEN_X - cfg.LR_MARGIN, self.SCREEN_Y - cfg.UD_MARGIN)
             
@@ -162,6 +216,39 @@ class Game():
         pg.quit()
         sys.exit()
 
+    def restart(self):
+
+        # Initialize screen depending on launched with fullscreen or not
+        self.screen = pg.display.set_mode((self.SCREEN_X, self.SCREEN_Y), pg.RESIZABLE)
+
+        # Initialize game surface to 4:3 aspect ratio 
+        self.orig_playarea = pg.Surface((cfg.PLAY_AREA_X, cfg.PLAY_AREA_Y), pg.SRCALPHA)
+        self.orig_playarea.fill((0, 0, 0, 0))
+        self.playarea = self.orig_playarea
+
+        # Empty sprite list
+        self.all_sprites = pg.sprite.Group()
+
+        # Initialize the two players
+        self.Player1 = c.Player(100, 800)
+        self.Player2 = c.Player(1340, 800)
+
+        # Make group for player sprites, then add to all sprite group
+        self.player_group = pg.sprite.Group(self.Player1, self.Player2)
+        for player in self.player_group:
+            self.all_sprites.add(player)
+
+        # Empty other sprite lists
+        self.proj_group = pg.sprite.Group()
+        self.particle_group = pg.sprite.Group()
+        self.asteroid_group = pg.sprite.Group()
+        self.wall_group = pg.sprite.Group()
+        self.platform_group = pg.sprite.Group()
+        self.run()
+
+
+Game1 = Game()
+
 if __name__ == "__main__":
-    cProfile.run("Game().run()")
+    cProfile.run("Game1.run()")
     
