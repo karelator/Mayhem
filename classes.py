@@ -35,10 +35,23 @@ class Movable_object(Sprite):
         # Adjust speed GRAVITY pixels down per frame
         self.acc.y += cfg.GRAVITY * multiplier
 
+    def explode(self, min_particles, max_particles, speed_multiplier):
+        n_smoke = random.randint(min_particles, max_particles)
+        smoke_list = []
+        for _ in range(n_smoke):
+            smoke_heading = pg.math.Vector2(1, 0) 
+            smoke_heading.rotate_ip(random.uniform(-180, 180))
+            smoke_heading *= cfg.SMOKESPEED * speed_multiplier
+            smoke_list.append(Smoke_Particle(self.rect.centerx, self.rect.centery, smoke_heading))
+        return smoke_list
+
+
 class Player(Movable_object):
     def __init__(self, x, y):
         super().__init__(asset.rocket_img, x, y)
         
+        self.startpos = (x, y)
+
         # Store inputs in field so it is accessible in update [Thrust, Rotate]
         self.inputs = [0, 0]
         self.frames_since_shoot = 0
@@ -60,26 +73,6 @@ class Player(Movable_object):
         self.add_gravity()
         # Accept player inputs
         self.accept_inputs()
-        # Keep rocket in play area (temporary)
-
-        #self.keep_in_screen()
-        self.keep_in_screen()
-
-        pass
-
-    def keep_in_screen(self):
-        if self.rect.left < 0:
-            self.rect.left = 0
-            self.speed.x = 0
-        elif self.rect.right > cfg.PLAY_AREA_X:
-            self.rect.right = cfg.PLAY_AREA_X
-            self.speed.x = 0
-        if self.rect.top < 0:
-            self.rect.top = 0
-            self.speed.y = 0
-        elif self.rect.bottom > cfg.PLAY_AREA_Y:
-            self.rect.bottom = cfg.PLAY_AREA_Y
-            self.speed.y = 0
     
     def is_thrusting(self):
         return self.inputs[0]
@@ -118,6 +111,31 @@ class Player(Movable_object):
         new_projectile = Projectile(self.rect.centerx + self.heading.x * 50,
                                     self.rect.centery + self.heading.y * 50, self.heading)
         return new_projectile
+    
+    def shot_other(self):
+        self.score += cfg.KILL_REWARD
+
+    def got_shot(self, other_player):
+        other_player.shot_other()
+        smoke = self.explode(30, 40, 2) if cfg.SMOKE else []
+        self.rect.x = -200
+        return smoke
+
+    def crashed(self):
+        self.score += cfg.CRASH_PENALTY
+        smoke = self.explode(30, 40, 2) if cfg.SMOKE else []
+        self.rect.x = -200
+        return smoke
+
+    def reset_pos(self):
+        self.heading = pg.math.Vector2(0, -1)
+        new_angle = self.heading.angle_to(pg.math.Vector2(0, -1))
+        rotated_image = pg.transform.rotate(asset.rocket_img, new_angle)
+        self.rect = rotated_image.get_rect(center=self.rect.center)
+        self.image = rotated_image
+        self.rect.center = self.startpos
+        self.speed *= 0
+        
 
 
 class Projectile(Movable_object):
@@ -156,6 +174,7 @@ class Asteroid(Movable_object):
         random_dir.rotate_ip(random.randint(5, 30))
         random_speed = random.uniform(5, 10)
         self.speed = random_dir * random_speed
+        self.times_shot = 0
 
 
     def update(self):
@@ -164,6 +183,15 @@ class Asteroid(Movable_object):
         if self.rect.top > cfg.PLAY_AREA_Y:
             self.kill()
         pass
+
+    def got_shot(self):
+        self.times_shot += 1
+        smoke_list = []
+        if self.times_shot >= cfg.ASTEROID_HP:
+            smoke_list = self.explode(20, 30, 1) if cfg.SMOKE else []
+            self.kill()
+        return smoke_list
+
 
 
 class Level_Design(Sprite):

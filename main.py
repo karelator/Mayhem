@@ -104,7 +104,7 @@ class Game():
                     self.playarea = fun.scale_to_fit(self.orig_playarea, self.SCREEN_X - cfg.LR_MARGIN, self.SCREEN_Y - cfg.UD_MARGIN)
 
                 elif event.type == pg.KEYDOWN and event.key == pg.K_r:
-                    self.restart()
+                    self.hard_restart()
 
 
             # Parse player input to rockets
@@ -158,34 +158,66 @@ class Game():
                             continue
                         # Differentiate between events
                         if isinstance(hit, c.Wall):
-                            sprite.kill()
+                            new_smoke = sprite.crashed()
+                            for particle in new_smoke:
+                                self.all_sprites.add(particle)
+                                self.particle_group.add(particle)                            
+                            self.respawn([sprite])
                         elif isinstance(hit, c.Player):
-                            sprite.kill()
-                            hit.kill()
+                            new_smoke = sprite.crashed()
+                            for particle in new_smoke:
+                                self.all_sprites.add(particle)
+                                self.particle_group.add(particle)                            
+                            hit.crashed()
+                            self.respawn([sprite, hit])
                         elif isinstance(hit, c.Projectile):
-                            sprite.kill()
+                            # Got shot by other player
+                            for player in self.player_group:
+                                if player != self:
+                                    new_smoke = sprite.got_shot(player)
+                                    for particle in new_smoke:
+                                        self.all_sprites.add(particle)
+                                        self.particle_group.add(particle)
                             hit.kill()
+                            self.respawn([sprite])
                         elif isinstance(hit, c.Asteroid):
-                            sprite.kill()
+                            new_smoke = sprite.crashed()
+                            for particle in new_smoke:
+                                self.all_sprites.add(particle)
+                                self.particle_group.add(particle)
+                            hit.kill()
+                            self.respawn([sprite])
                         elif isinstance(hit, c.Platform): # Check if landing conditions are met
-                            if abs(sprite.heading.angle_to((0, -1))) > cfg.SAFELANDING_ANGLE  or sprite.speed.length_squared() > cfg.SAFELANDING_SPEED**2:
-                                sprite.kill()
-                            sprite.acc *= 0
-                            if sprite.is_thrusting():
-                                sprite.thrust
-                            else: 
-                                sprite.rect.bottom = hit.rect.top
-                                sprite.speed *= 0
+                            if abs(sprite.heading.angle_to((0, -1))) <= cfg.SAFELANDING_ANGLE  and sprite.speed.length_squared() < cfg.SAFELANDING_SPEED**2:
+                                sprite.acc *= 0
+                                if sprite.is_thrusting():
+                                    sprite.thrust
+                                else: 
+                                    sprite.rect.bottom = hit.rect.top
+                                    sprite.speed *= 0
+                            else:
+                                new_smoke = sprite.crashed()
+                                for particle in new_smoke:
+                                    self.all_sprites.add(particle)
+                                    self.particle_group.add(particle)                                
+                                self.respawn([sprite])
                                 
 
                     # Bullet collision
-                    if isinstance(sprite, c.Projectile):
+                    elif isinstance(sprite, c.Projectile):
                         if isinstance(hit, c.Wall):
                             sprite.kill()
+                        if isinstance(hit, c.Asteroid):
+                            new_smoke = hit.got_shot()
+                            for particle in new_smoke:
+                                self.all_sprites.add(particle)
+                                self.particle_group.add(particle)
+                            sprite.kill()
 
-
-                        
-            
+                    # Smoke collision
+                    elif isinstance(sprite, c.Smoke_Particle):
+                        if isinstance(hit, c.Wall):
+                            sprite.kill()
 
             # Other game event logic 
 
@@ -196,7 +228,15 @@ class Game():
                     self.asteroid_group.add(new_asteroid)
                     self.all_sprites.add(new_asteroid)
 
-            # Draw sprites to playarea in correct order and make scaled version
+            self.draw()
+           
+            self.clock.tick(cfg.FRAMERATE)
+
+        pg.quit()
+        sys.exit()
+
+    # Draw sprites to playarea in correct order and make scaled version
+    def draw(self):
             self.asteroid_group.draw(self.orig_playarea)
             self.proj_group.draw(self.orig_playarea)
             self.particle_group.draw(self.orig_playarea)
@@ -208,23 +248,28 @@ class Game():
             
             # Draw bg and game surface such that centers aligns with display center
             self.screen.blit(self.playarea, ((self.SCREEN_X / 2) - (self.playarea.get_width() / 2), (self.SCREEN_Y / 2) - (self.playarea.get_height() / 2)))
-
             # Update the screen after all events have taken place
             pg.display.update()
-            self.clock.tick(cfg.FRAMERATE)
 
-        pg.quit()
-        sys.exit()
 
-    def restart(self):
+    def respawn(self, dead_players):
+        if cfg.RESPAWN_BEHAVIOUR == 0:
+            for _ in range(30):
+                # Make dead player explode while the rest of the game freezes for half a second
+                self.screen.blit(self.background, (0, 0))
+                self.orig_playarea.fill((0, 0, 0, 0))
+                self.particle_group.update()
+                self.draw()
+                self.clock.tick(cfg.FRAMERATE)
+            for player in self.player_group:
+                player.reset_pos()
+        else:
+            for player in dead_players:
+                player.reset_pos()
+        for asteroid in self.asteroid_group:
+            asteroid.kill()
 
-        # Initialize screen depending on launched with fullscreen or not
-        self.screen = pg.display.set_mode((self.SCREEN_X, self.SCREEN_Y), pg.RESIZABLE)
-
-        # Initialize game surface to 4:3 aspect ratio 
-        self.orig_playarea = pg.Surface((cfg.PLAY_AREA_X, cfg.PLAY_AREA_Y), pg.SRCALPHA)
-        self.orig_playarea.fill((0, 0, 0, 0))
-        self.playarea = self.orig_playarea
+    def hard_restart(self):
 
         # Empty sprite list
         self.all_sprites = pg.sprite.Group()
