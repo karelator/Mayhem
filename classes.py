@@ -113,17 +113,17 @@ class Player(Movable_object):
     #Function to handle collisions between sprites
     def die(self):
         #Collision detection with walls
-        for wall in main.wall_group:
+        for wall in main.Game.wall_group:
             if pg.sprite.collide_rect(self, wall):
                 self.kill()
                 return
         #Collision detection with other player
-        for player in main.player_group:
+        for player in main.Game.player_group:
             if pg.sprite.collide_rect(self, player):
                 self.kill()
                 return 
         #Collision detection with projectile
-        for projectile in main.proj_group:
+        for projectile in main.Game.proj_group:
             if pg.sprite.collide_rect(self, projectile):
                 self.kill()
                 return
