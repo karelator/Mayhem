@@ -45,8 +45,8 @@ class Player(Movable_object):
         # Player is only movable object with heading angle seperate from speed, initialize to straight up
         self.heading = pg.math.Vector2(0, -1)
         # Starting value for fuel
-        self.fuel_storage = 1000
-        # Starting value for score
+        self.fuel_storage = cfg.START_FUEL
+        # Initialize score value
         self.score = 0
         
     def update(self):

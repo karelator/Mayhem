@@ -23,5 +23,7 @@ SHOOT_CD = 8
 # Turn on/off asteroids, spawnrate in average frames between each spawn
 ASTEROIDS = True
 ASTEROID_SPAWNRATE = 250
-# Fuel droprate by frame
+# Fuel configurations (Droprate, starting fuel and spawnrate)
 FUEL_DRATE = 0.25
+START_FUEL = 1000
+FUEL_SPAWNRATE = 250
