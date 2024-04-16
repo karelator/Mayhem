@@ -45,7 +45,7 @@ class Player(Movable_object):
         # Player is only movable object with heading angle seperate from speed, initialize to straight up
         self.heading = pg.math.Vector2(0, -1)
         # Starting value for fuel
-        self.fuel_lvl = 1000
+        self.fuel_storage = 1000
         # Starting value for score
         self.score = 0
         
@@ -54,6 +54,8 @@ class Player(Movable_object):
         
         # One more frame since rocket last shot
         self.frames_since_shoot += 1
+        # Decrease fuel
+        self.fuel_storage -= cfg.FUEL_DRATE
         # Add Gravity to acceleration
         self.add_gravity()
         # Accept player inputs
