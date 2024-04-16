@@ -269,6 +269,8 @@ class Game():
                 player.reset_pos()
         for asteroid in self.asteroid_group:
             asteroid.kill()
+        for projectile in self.proj_group:
+            projectile.kill()
 
     def hard_restart(self):
 
