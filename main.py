@@ -259,6 +259,7 @@ class Game():
                 self.screen.blit(self.background, (0, 0))
                 self.orig_playarea.fill((0, 0, 0, 0))
                 self.particle_group.update()
+                pg.sprite.groupcollide(self.particle_group, self.wall_group, 1, 0)
                 self.draw()
                 self.clock.tick(cfg.FRAMERATE)
             for player in self.player_group:
