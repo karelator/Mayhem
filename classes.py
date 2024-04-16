@@ -44,6 +44,10 @@ class Player(Movable_object):
         self.frames_since_shoot = 0
         # Player is only movable object with heading angle seperate from speed, initialize to straight up
         self.heading = pg.math.Vector2(0, -1)
+        # Starting value for fuel
+        self.fuel_lvl = 1000
+        # Starting value for score
+        self.score = 0
         
     def update(self):
         super().update()
@@ -56,6 +60,7 @@ class Player(Movable_object):
         self.accept_inputs()
         # Keep rocket in play area (temporary)
         self.keep_in_screen()
+        # Kill the sprite after collisions
         self.die()
 
         pass
@@ -116,16 +121,19 @@ class Player(Movable_object):
         for wall in main.Game.wall_group:
             if pg.sprite.collide_rect(self, wall):
                 self.kill()
+                self.score -= 50
                 return
         # Collision detection with other player
         for player in main.Game.player_group:
             if pg.sprite.collide_rect(self, player):
                 self.kill()
+                self.score -= 50
                 return 
         # Collision detection with projectile
         for projectile in main.Game.proj_group:
             if pg.sprite.collide_rect(self, projectile):
                 self.kill()
+                self.score -= 50
                 return
 
 
