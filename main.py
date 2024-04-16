@@ -93,7 +93,6 @@ class Game():
 
                 # Toggle between Fullscreen and Windowed
                 elif event.type == pg.KEYDOWN and event.key == pg.K_F11:
-                    self.toggle_fullscreen()
                     # Toggle Fullscreen bool
                     self.FULLSCREEN = not self.FULLSCREEN
                     self.SCREEN_X = self.infoObject.current_w if self.FULLSCREEN else cfg.SCREEN_X
@@ -249,6 +248,7 @@ class Game():
 
 Game1 = Game()
 
+Game1.run()
 if __name__ == "__main__":
-    cProfile.run("Game1.run()")
-    
+    #cProfile.run("Game1.run()")
+    pass
