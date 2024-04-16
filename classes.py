@@ -56,7 +56,7 @@ class Player(Movable_object):
         self.accept_inputs()
         # Keep rocket in play area (temporary)
         self.keep_in_screen()
-        self.crash()
+        self.die()
 
         pass
 
@@ -111,18 +111,22 @@ class Player(Movable_object):
     
 
     #Function to handle collisions between sprites
-    def crash(self):
+    def die(self):
         #Collision detection with walls
         for wall in main.wall_group:
             if pg.sprite.collide_rect(self, wall):
                 self.kill()
                 return
-        
         #Collision detection with other player
         for player in main.player_group:
             if pg.sprite.collide_rect(self, player):
                 self.kill()
                 return 
+        #Collision detection with projectile
+        for projectile in main.proj_group:
+            if pg.sprite.collide_rect(self, projectile):
+                self.kill()
+                return
 
 
 class Projectile(Movable_object):
