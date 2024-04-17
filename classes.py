@@ -3,7 +3,7 @@ import pygame as pg
 from typing import Any
 import config as cfg
 import assets as asset
-import random
+import random, time
 
 class Sprite(pg.sprite.Sprite):
     def __init__(self, image, x, y):
@@ -20,14 +20,14 @@ class Movable_object(Sprite):
         self.speed = pg.math.Vector2()
         self.acc = pg.math.Vector2()
 
-    def update(self):
+    def update(self, dt):
         # Add acceleration to speed, then reset acceleration for calculation next frame
-        self.speed += self.acc
+        self.speed += (self.acc * dt)
         self.acc = pg.math.Vector2()
 
         # Update new position with speed
-        self.rect.x += self.speed.x
-        self.rect.y += self.speed.y
+        self.rect.x += (self.speed.x * dt)
+        self.rect.y += (self.speed.y * dt)
         pass
 
     # Make gravity calculation available for all movable objects, consider usage object by object
@@ -54,7 +54,7 @@ class Player(Movable_object):
 
         # Store inputs in field so it is accessible in update [Thrust, Rotate]
         self.inputs = [0, 0]
-        self.frames_since_shoot = 0
+        self.last_shot = time.time()
         # Player is only movable object with heading angle seperate from speed, initialize to straight up
         self.heading = pg.math.Vector2(0, -1)
         # Starting value for fuel
@@ -62,25 +62,23 @@ class Player(Movable_object):
         # Initialize score value
         self.score = 0
         
-    def update(self):
-        super().update()
-        
-        # One more frame since rocket last shot
-        self.frames_since_shoot += 1
+    def update(self, dt):
+        super().update(dt)
+
         # Decrease fuel
-        self.fuel_storage -= cfg.FUEL_DRATE
+        self.fuel_storage -= (cfg.FUEL_DRATE * dt)
         # Add Gravity to acceleration
         self.add_gravity()
         # Accept player inputs
-        self.accept_inputs()
+        self.accept_inputs(dt)
     
     def is_thrusting(self):
         return self.inputs[0]
 
     # Convert user input to changes in parameters
-    def accept_inputs(self):
+    def accept_inputs(self, dt):
         # Add rotation input to heading angle
-        self.heading.rotate_ip(self.inputs[1] * 5)
+        self.heading.rotate_ip(self.inputs[1] * 5 * dt)
         new_angle = self.heading.angle_to(pg.math.Vector2(0, -1))
         rotated_image = pg.transform.rotate(asset.rocket_img, new_angle) if not self.inputs[0]\
                    else pg.transform.rotate(asset.rocket_thrusting_img, new_angle)
@@ -104,9 +102,9 @@ class Player(Movable_object):
     # Function to handle shooting logic, spawning the projectiles and enforcing cooldown
     def shoot(self):
         # Cancel if not long enough since last shot
-        if self.frames_since_shoot < cfg.SHOOT_CD:
+        if time.time() - self.last_shot < cfg.SHOOT_CD:
             return None
-        self.frames_since_shoot = 0
+        self.last_shot = time.time()
         # TODO: Consider if bullet speed should be affected by rocket velocity? Add recoil?
         new_projectile = Projectile(self.rect.centerx + self.heading.x * 50,
                                     self.rect.centery + self.heading.y * 50, self.heading)
@@ -143,8 +141,8 @@ class Projectile(Movable_object):
         super().__init__(asset.projectile_img, x, y)
         self.speed = heading_vector * cfg.BULLETSPEED
 
-    def update(self):
-        super().update()
+    def update(self, dt):
+        super().update(dt)
         self.add_gravity()
         pass
 
@@ -153,16 +151,15 @@ class Smoke_Particle(Movable_object):
         super().__init__(asset.smoke_particle_img, x, y)
         self.speed = pg.math.Vector2(avg_trajectory * cfg.SMOKESPEED) * random.uniform(0.8, 1.2)
         self.speed.rotate_ip(random.randint(-10, 10))
-        self.lifetime = 0
+        self.start_time = time.time()
 
-    def update(self):
-        super().update()
-        self.lifetime += 1
-        if self.lifetime > cfg.SMOKELIFETIME:
+    def update(self, dt):
+        super().update(dt)
+        if (time.time() - self.start_time) > cfg.SMOKELIFETIME:
             self.kill()
         else:
             new_image = pg.Surface((11, 11), pg.SRCALPHA)
-            pg.draw.circle(new_image, (120, 120, 120, 120 * (1 - (self.lifetime/ cfg.SMOKELIFETIME))), (6, 6), 5, 0)
+            pg.draw.circle(new_image, (120, 120, 120, 120 * (1 - ((time.time() - self.start_time) / cfg.SMOKELIFETIME))), (6, 6), 5, 0)
             self.image = new_image
 
 
@@ -177,8 +174,8 @@ class Asteroid(Movable_object):
         self.times_shot = 0
 
 
-    def update(self):
-        super().update()
+    def update(self, dt):
+        super().update(dt)
         self.add_gravity()
         if self.rect.top > cfg.PLAY_AREA_Y:
             self.kill()
@@ -198,7 +195,7 @@ class Level_Design(Sprite):
     def __init__(self, image, x, y):
         super().__init__(image, x, y)
     
-    def update(self):
+    def update(self, dt):
         pass
 
 
@@ -206,8 +203,8 @@ class Platform(Level_Design):
     def __init__(self, x, y):
         super().__init__(asset.platform_img, x, y)
     
-    def update(self):
-        super().update()
+    def update(self, dt):
+        super().update(dt)
         pass
 
 class Wall(Level_Design):
