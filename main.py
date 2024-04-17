@@ -3,14 +3,9 @@ import pygame as pg
 import cProfile
 pg.init()
 # Import config and functions file
-import config as cfg
-import functions as fun
-import classes as c
-import assets as asset
-import levels as lvl
-# Used for making sure code is exited fully when game is closed
-import sys
-import random 
+import config as cfg, functions as fun, classes as c, assets as asset, levels as lvl
+# Used for making sure code is exited fully when game is closed, randomly generate values and framerate independence
+import sys, random, time
 
 class Game():
     def __init__(self):
@@ -69,7 +64,16 @@ class Game():
         
 
         running = True
+
+        # Time tracker for framerate independence
+        self.last_time = time.time()
+
         while running:
+
+            # Track time passed since last frame. Multiply by 60 to simulate 60 fps
+            self.dt = time.time() - self.last_time
+            self.dt *= 60
+            self.last_time = time.time()
 
             # Reset playarea
             self.screen.blit(self.background, (0, 0))
@@ -139,7 +143,7 @@ class Game():
 
 
             # Update sprites
-            self.all_sprites.update()
+            self.all_sprites.update(self.dt)
 
             # Game collision logic
 
@@ -187,11 +191,9 @@ class Game():
                             hit.kill()
                             self.respawn([sprite])
                         elif isinstance(hit, c.Platform): # Check if landing conditions are met
-                            if abs(sprite.heading.angle_to((0, -1))) <= cfg.SAFELANDING_ANGLE  and sprite.speed.length_squared() < cfg.SAFELANDING_SPEED**2:
+                            if abs(sprite.heading.angle_to((0, -1))) <= cfg.SAFELANDING_ANGLE  and sprite.speed.length_squared() < cfg.SAFELANDING_SPEED**2 * self.dt:
                                 sprite.acc *= 0
-                                if sprite.is_thrusting():
-                                    sprite.thrust
-                                else: 
+                                if not sprite.is_thrusting():
                                     sprite.rect.bottom = hit.rect.top
                                     sprite.speed *= 0
                             else:
@@ -253,11 +255,16 @@ class Game():
 
     def respawn(self, dead_players):
         if cfg.RESPAWN_BEHAVIOUR == 0:
-            for _ in range(30):
+            start_time = time.time()
+            while time.time() <= start_time + 0.5:
+                # Track time passed since last frame. Multiply by 60 to simulate 60 fps
+                self.dt = time.time() - self.last_time
+                self.dt *= 60
+                self.last_time = time.time()
                 # Make dead player explode while the rest of the game freezes for half a second
                 self.screen.blit(self.background, (0, 0))
                 self.orig_playarea.fill((0, 0, 0, 0))
-                self.particle_group.update()
+                self.particle_group.update(self.dt)
                 pg.sprite.groupcollide(self.particle_group, self.wall_group, 1, 0)
                 self.draw()
                 self.clock.tick(cfg.FRAMERATE)
@@ -296,7 +303,7 @@ class Game():
 
 Game1 = Game()
 
-Game1.run()
+#Game1.run()
 if __name__ == "__main__":
-    #cProfile.run("Game1.run()")
+    cProfile.run("Game1.run()")
     pass
