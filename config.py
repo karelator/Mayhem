@@ -4,7 +4,9 @@ SCREEN_Y = 720 # 720 1440
 # Resolution for backend gameplay area calculations
 PLAY_AREA_X = 1440
 PLAY_AREA_Y = 1080 
-FRAMERATE = 40
+FRAMERATE = 60
+# 0 = All players respawn when one die | 1 = Only dead player respawns
+RESPAWN_BEHAVIOUR = 0
 # Margin to make game less crowded
 LR_MARGIN = 50 # Left/Right
 UD_MARGIN = 50 # Up/Down
@@ -23,10 +25,15 @@ SMOKE = True
 SMOKESPEED = 2
 SMOKELIFETIME = 20
 
-# Turn on/off asteroids, spawnrate in average frames between each spawn
+# Turn on/off asteroids | Spawnrate in average frames between each spawn | How many bullets to break apart asteroid
 ASTEROIDS = True
-ASTEROID_SPAWNRATE = 250
+ASTEROID_SPAWNRATE = 200
+ASTEROID_HP = 1
 # Fuel configurations (Droprate, starting fuel and spawnrate)
 FUEL_DRATE = 0.25
 START_FUEL = 1000
 FUEL_SPAWNRATE = 250
+
+# Points lost / gained for specific events
+CRASH_PENALTY = -50
+KILL_REWARD = 100
