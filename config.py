@@ -8,7 +8,7 @@ FRAMERATE = 90
 # 0 = All players respawn when one die | 1 = Only dead player respawns
 RESPAWN_BEHAVIOUR = 0
 # Margin to make game less crowded and fit UI elements
-LR_MARGIN = 300 # Left/Right
+LR_MARGIN = 250 # Left/Right
 UD_MARGIN = 50 # Up/Down
 # Gravitational Force in pixels per frame
 GRAVITY = 0.1
@@ -25,14 +25,14 @@ SMOKE = True
 SMOKESPEED = 2
 SMOKELIFETIME = 0.3
 
-# Turn on/off asteroids | Average Spawnrate in 60ths of a second | How many bullets to destroy asteroid
+# Turn on/off asteroids | Average Spawnrate (Lower = Faster) | How many bullets to destroy asteroid
 ASTEROIDS = True
 ASTEROID_SPAWNRATE = 1000
 ASTEROID_HP = 1
 # Fuel configurations (Droprate, starting fuel and spawnrate)
 MAX_FUEL = 100
 FUEL_DRAIN = 0.25
-REFUEL_RATE = 1
+REFUEL_RATE = 10
 
 # Points lost / gained for specific events
 CRASH_PENALTY = -50
