@@ -73,6 +73,9 @@ class Player(Movable_object):
     def is_thrusting(self):
         return self.inputs[0]
 
+    def get_fuel(self):
+        return self.fuel
+
     # Convert user input to changes in parameters
     def accept_inputs(self, dt):
         # Add rotation input to heading angle

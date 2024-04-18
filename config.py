@@ -30,7 +30,7 @@ ASTEROIDS = True
 ASTEROID_SPAWNRATE = 1000
 ASTEROID_HP = 1
 # Fuel configurations (Droprate, starting fuel and spawnrate)
-MAX_FUEL = 10
+MAX_FUEL = 100
 FUEL_DRAIN = 0.25
 REFUEL_RATE = 1
 
