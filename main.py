@@ -9,7 +9,6 @@ import sys, random, time
 
 class Game():
     def __init__(self):
-
         # Object for monitor size
         self.infoObject = pg.display.Info() 
         # File directories and screen size
@@ -131,12 +130,12 @@ class Game():
                     self.all_sprites.add(new_proj)
             # Handle thrusting, thrust function returns smoke particle objects
             if keys[pg.K_w]:
-                new_smoke = self.Player1.thrust()
+                new_smoke = self.Player1.thrust(self.dt)
                 if new_smoke:
                     self.particle_group.add(new_smoke)
                     self.all_sprites.add(new_smoke)
             if keys[pg.K_UP]:
-                new_smoke = self.Player2.thrust()
+                new_smoke = self.Player2.thrust(self.dt)
                 if new_smoke:
                     self.particle_group.add(new_smoke)
                     self.all_sprites.add(new_smoke)
@@ -145,8 +144,7 @@ class Game():
             # Update sprites
             self.all_sprites.update(self.dt)
 
-            # Game collision logic
-
+            # Game logic (collisions + events)
             for sprite in self.all_sprites:
                 collisions = pg.sprite.spritecollide(sprite, self.all_sprites, False)
                 for hit in collisions:
@@ -193,6 +191,7 @@ class Game():
                         elif isinstance(hit, c.Platform): # Check if landing conditions are met
                             if abs(sprite.heading.angle_to((0, -1))) <= cfg.SAFELANDING_ANGLE  and sprite.speed.length_squared() < cfg.SAFELANDING_SPEED**2 * self.dt:
                                 sprite.acc *= 0
+                                sprite.refuel(self.dt)
                                 if not sprite.is_thrusting():
                                     sprite.rect.bottom = hit.rect.top
                                     sprite.speed *= 0
@@ -220,17 +219,14 @@ class Game():
                         if isinstance(hit, c.Wall):
                             sprite.kill()
 
-            # Other game event logic 
-
             # Attempt to spawn asteroid
             if cfg.ASTEROIDS:
-                if not random.randint(0, cfg.ASTEROID_SPAWNRATE):
+                if not random.randint(0, int(cfg.ASTEROID_SPAWNRATE)):
                     new_asteroid = c.Asteroid()
                     self.asteroid_group.add(new_asteroid)
                     self.all_sprites.add(new_asteroid)
 
             self.draw()
-           
             self.clock.tick(cfg.FRAMERATE)
 
         pg.quit()
@@ -249,6 +245,11 @@ class Game():
             
             # Draw bg and game surface such that centers aligns with display center
             self.screen.blit(self.playarea, ((self.SCREEN_X / 2) - (self.playarea.get_width() / 2), (self.SCREEN_Y / 2) - (self.playarea.get_height() / 2)))
+            
+            P1Fuel = asset.fuelbar
+
+            P2Fuel = asset.fuelbar
+            
             # Update the screen after all events have taken place
             pg.display.update()
 

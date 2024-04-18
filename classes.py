@@ -58,15 +58,13 @@ class Player(Movable_object):
         # Player is only movable object with heading angle seperate from speed, initialize to straight up
         self.heading = pg.math.Vector2(0, -1)
         # Starting value for fuel
-        self.fuel_storage = cfg.START_FUEL
+        self.fuel = cfg.MAX_FUEL
         # Initialize score value
         self.score = 0
         
     def update(self, dt):
         super().update(dt)
 
-        # Decrease fuel
-        self.fuel_storage -= (cfg.FUEL_DRATE * dt)
         # Add Gravity to acceleration
         self.add_gravity()
         # Accept player inputs
@@ -80,26 +78,35 @@ class Player(Movable_object):
         # Add rotation input to heading angle
         self.heading.rotate_ip(self.inputs[1] * 5 * dt)
         new_angle = self.heading.angle_to(pg.math.Vector2(0, -1))
-        rotated_image = pg.transform.rotate(asset.rocket_img, new_angle) if not self.inputs[0]\
-                   else pg.transform.rotate(asset.rocket_thrusting_img, new_angle)
+        rotated_image = pg.transform.rotate(asset.rocket_thrusting_img, new_angle) if self.inputs[0] and self.fuel > 0\
+                   else pg.transform.rotate(asset.rocket_img, new_angle)
         self.rect = rotated_image.get_rect(center=self.rect.center)
         self.image = rotated_image
 
     def set_inputs(self, input_list):
         self.inputs = input_list
 
-    def thrust(self):
-        self.acc += self.heading * self.inputs[0] * cfg.THRUSTFORCE
+    def thrust(self, dt):
         smoke_list = []
-        if cfg.SMOKE:
-            n_smoke = random.randint(3, 5)
-            smoke_heading = (self.speed / 2) - (self.heading * cfg.SMOKESPEED)
-            for _ in range(n_smoke):
-                smoke_list.append(Smoke_Particle(self.rect.centerx, self.rect.centery, smoke_heading))
+        if self.fuel > 0:
+            self.acc += self.heading * self.inputs[0] * cfg.THRUSTFORCE
+            # Decrease fuel and set to 0 if negative
+            self.fuel -= (cfg.FUEL_DRAIN * dt)
+            if self.fuel < 0:
+                self.fuel = 0
+            if cfg.SMOKE:
+                n_smoke = random.randint(3, 5)
+                smoke_heading = (self.speed / 2) - (self.heading * cfg.SMOKESPEED)
+                for _ in range(n_smoke):
+                    smoke_list.append(Smoke_Particle(self.rect.centerx, self.rect.centery, smoke_heading))
         return smoke_list
 
+    def refuel(self, dt):
+        if self.fuel < cfg.MAX_FUEL:
+            self.fuel += cfg.REFUEL_RATE * dt
+        self.fuel = min(self.fuel, cfg.MAX_FUEL)
 
-    # Function to handle shooting logic, spawning the projectiles and enforcing cooldown
+    # Function to handle shooting logic: spawning the projectiles and enforcing cooldown
     def shoot(self):
         # Cancel if not long enough since last shot
         if time.time() - self.last_shot < cfg.SHOOT_CD:
@@ -133,6 +140,7 @@ class Player(Movable_object):
         self.image = rotated_image
         self.rect.center = self.startpos
         self.speed *= 0
+        self.fuel = cfg.MAX_FUEL
         
 
 
@@ -166,7 +174,7 @@ class Smoke_Particle(Movable_object):
 class Asteroid(Movable_object):
     def __init__(self):
         # Spawn 50 pixels above the screen, with random x val
-        super().__init__(asset.asteroid_img, random.randint(0, int(cfg.PLAY_AREA_X * 1.2)), -50)
+        super().__init__(asset.asteroid_img, random.randint((0 - int(cfg.PLAY_AREA_X * 0.2)), int(cfg.PLAY_AREA_X * 1.2)), -50)
         random_dir = pg.math.Vector2(0, 1)
         random_dir.rotate_ip(random.randint(5, 30))
         random_speed = random.uniform(5, 10)
