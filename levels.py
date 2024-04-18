@@ -21,6 +21,6 @@ def lvl1():
     # Lower Right
     walls.append(c.Wall(cfg.PLAY_AREA_X - 250, cfg.PLAY_AREA_X, cfg.PLAY_AREA_Y - 240, cfg.PLAY_AREA_Y - 200))
 
-    platforms = [c.Platform(100, cfg.PLAY_AREA_Y - 240), c.Platform(1340, cfg.PLAY_AREA_Y - 240)]
+    platforms = [c.Platform(100, cfg.PLAY_AREA_Y - 240), c.Platform(1340, cfg.PLAY_AREA_Y - 240), c.Platform(cfg.PLAY_AREA_X / 2, 520)]
 
     return (walls, platforms)
