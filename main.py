@@ -247,29 +247,31 @@ class Game():
             top_left_of_playarea = ((self.SCREEN_X / 2) - (self.playarea.get_width() / 2), (self.SCREEN_Y / 2) - (self.playarea.get_height() / 2))
             self.screen.blit(self.playarea, top_left_of_playarea)
             
-            fuel_dimensions = fun.scale_to_fit(pg.Surface((30, 150), pg.SRCALPHA), cfg.LR_MARGIN/2, self.playarea.get_height() / 2)
+            Score_Img = fun.scale_to_fit(asset.score_img, cfg.LR_MARGIN/2, self.playarea.get_height() / 3)
+            UI_width, UI_height = Score_Img.get_size()
             
-
-            fuel_bar_width, fuel_bar_height = fuel_dimensions.get_size()
-            P1Fuel = pg.Surface((fuel_bar_width, fuel_bar_height), pg.SRCALPHA)
+            P1Fuel = pg.Surface((UI_width, UI_height), pg.SRCALPHA)
             P1Fuel.fill((255, 0, 0))
             fuel_percentage = self.Player1.get_fuel() / cfg.MAX_FUEL
             # Scale the fuel percentage to match the height of the bar
-            bar_height = fuel_bar_height - int(fuel_percentage * fuel_bar_height)  
-            pg.draw.polygon(P1Fuel, (0, 255, 0), [(0, bar_height), (fuel_bar_width, bar_height), (fuel_bar_width, fuel_bar_height), (0, fuel_bar_height)])
+            bar_height = UI_height - int(fuel_percentage * UI_height)  
+            pg.draw.polygon(P1Fuel, (0, 255, 0), [(0, bar_height), (UI_width, bar_height), (UI_width, UI_height), (0, UI_height)])
 
 
-
-
-            P2Fuel = pg.Surface((fuel_bar_width, fuel_bar_height), pg.SRCALPHA)
+            P2Fuel = pg.Surface((UI_width, UI_height), pg.SRCALPHA)
             P2Fuel.fill((255, 0, 0))
             fuel_percentage = self.Player2.get_fuel() / cfg.MAX_FUEL
             # Scale the fuel percentage to match the height of the bar
-            bar_height = fuel_bar_height - int(fuel_percentage * fuel_bar_height)  
-            pg.draw.polygon(P2Fuel, (0, 255, 0), [(0, bar_height), (fuel_bar_width, bar_height), (fuel_bar_width, fuel_bar_height), (0, fuel_bar_height)])
+            bar_height = UI_height - int(fuel_percentage * UI_height)  
+            pg.draw.polygon(P2Fuel, (0, 255, 0), [(0, bar_height), (UI_width, bar_height), (UI_width, UI_height), (0, UI_height)])
 
-            self.screen.blit(P1Fuel, (top_left_of_playarea[0] - fuel_bar_width - 50, top_left_of_playarea[1] + self.playarea.get_height() - fuel_bar_height))
-            self.screen.blit(P2Fuel, (top_left_of_playarea[0] + self.playarea.get_width() + 50 , top_left_of_playarea[1] + self.playarea.get_height() - fuel_bar_height))
+            self.screen.blit(P1Fuel, (top_left_of_playarea[0] - UI_width - 50, top_left_of_playarea[1] + self.playarea.get_height() - UI_height))
+            self.screen.blit(P2Fuel, (top_left_of_playarea[0] + self.playarea.get_width() + 50 , top_left_of_playarea[1] + self.playarea.get_height() - UI_height))
+            
+            self.screen.blit(Score_Img, (top_left_of_playarea[0] - UI_width - 50, top_left_of_playarea[1]))
+            self.screen.blit(Score_Img, (top_left_of_playarea[0] + self.playarea.get_width() + 50, top_left_of_playarea[1]))
+
+            
             # Update the screen after all events have taken place
             pg.display.update()
 
