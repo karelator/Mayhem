@@ -1,6 +1,6 @@
 # CODE BY Thomas Lillealter Nygård AND Andreas Karel Eriksen
 
-#FILE FOR HELPER FUNCTIONS
+# FILE FOR HELPER FUNCTIONS
 
 # Import pygame with abbreviated alias
 import pygame as pg
