@@ -4,7 +4,7 @@ SCREEN_Y = 720 # 720 1440
 # Resolution for backend gameplay area calculations
 PLAY_AREA_X = 1440
 PLAY_AREA_Y = 1080 
-FRAMERATE = 90
+FRAMERATE = 60
 # 0 = All players respawn when one die | 1 = Only dead player respawns
 RESPAWN_BEHAVIOUR = 0
 # Margin to make game less crowded and fit UI elements
@@ -24,16 +24,16 @@ SHOOT_CD = 0.2
 SMOKE = True
 SMOKESPEED = 2
 SMOKELIFETIME = 0.3
-
 # Turn on/off asteroids | Average Spawnrate (Lower = Faster) | How many bullets to destroy asteroid
 ASTEROIDS = True
-ASTEROID_SPAWNRATE = 1000
-ASTEROID_HP = 1
+ASTEROID_SPAWNRATE = 500
+ASTEROID_HP = 3
 # Fuel configurations (Droprate, starting fuel and spawnrate)
-MAX_FUEL = 100
+MAX_FUEL = 250
 FUEL_DRAIN = 0.25
 REFUEL_RATE = 10
-
 # Points lost / gained for specific events
 CRASH_PENALTY = -50
 KILL_REWARD = 100
+HIT_ASTEROID_REWARD = 25
+DESTROY_ASTEROID_REWARD = 50

@@ -1,11 +1,11 @@
 # Import pygame with abbreviated alias, and initialize
 import pygame as pg
-import cProfile
 pg.init()
+pg.font.init()
 # Import config and functions file
 import config as cfg, functions as fun, classes as c, assets as asset, levels as lvl
 # Used for making sure code is exited fully when game is closed, randomly generate values and framerate independence
-import sys, random, time
+import sys, random, time, cProfile
 
 class Game():
     def __init__(self):
@@ -16,22 +16,19 @@ class Game():
         self.SCREEN_X = cfg.SCREEN_X
         self.SCREEN_Y = cfg.SCREEN_Y
 
-
         # Initialize screen depending on launched with fullscreen or not
         self.screen = pg.display.set_mode((self.SCREEN_X, self.SCREEN_Y), pg.RESIZABLE)
         pg.display.set_caption("Budget Blastoff")
 
         # Initialize background object and scale to cover screen
-
         self.background = fun.scale_to_cover(asset.origbg, self.SCREEN_X, self.SCREEN_Y)
-
 
         # Initialize game surface to 4:3 aspect ratio 
         self.orig_playarea = pg.Surface((cfg.PLAY_AREA_X, cfg.PLAY_AREA_Y), pg.SRCALPHA)
         self.orig_playarea.fill((0, 0, 0, 0))
         self.playarea = self.orig_playarea
         
-
+        # Module to cap the fps
         self.clock = pg.time.Clock()
 
         # Make group for all sprites
@@ -46,7 +43,7 @@ class Game():
         for player in self.player_group:
             self.all_sprites.add(player)
 
-        # TODO: Make groups for other sprite types
+        # Groups for all different sprite types to handle collision and updating
         self.proj_group = pg.sprite.Group()
         self.particle_group = pg.sprite.Group()
         self.asteroid_group = pg.sprite.Group()
@@ -54,14 +51,13 @@ class Game():
         self.platform_group = pg.sprite.Group()
 
     def run(self):
-
+        # Load level
         lvl1_walls, lvl1_platforms = lvl.lvl1()
         self.wall_group.add(lvl1_walls)
         self.all_sprites.add(lvl1_walls)
         self.platform_group.add(lvl1_platforms)
         self.all_sprites.add(lvl1_platforms)
         
-
         running = True
 
         # Time tracker for framerate independence
@@ -93,7 +89,6 @@ class Game():
                         self.screen.blit(self.background, (0, 0))
                         self.playarea = fun.scale_to_fit(self.orig_playarea, self.SCREEN_X - cfg.LR_MARGIN, self.SCREEN_Y - cfg.UD_MARGIN)
 
-
                 # Toggle between Fullscreen and Windowed
                 elif event.type == pg.KEYDOWN and event.key == pg.K_F11:
                     # Toggle Fullscreen bool
@@ -107,7 +102,6 @@ class Game():
 
                 elif event.type == pg.KEYDOWN and event.key == pg.K_r:
                     self.hard_restart()
-
 
             # Parse player input to rockets
             keys = pg.key.get_pressed()
@@ -140,7 +134,6 @@ class Game():
                     self.particle_group.add(new_smoke)
                     self.all_sprites.add(new_smoke)
 
-
             # Update sprites
             self.all_sprites.update(self.dt)
 
@@ -172,13 +165,11 @@ class Game():
                             hit.crashed()
                             self.respawn([sprite, hit])
                         elif isinstance(hit, c.Projectile):
-                            # Got shot by other player
-                            for player in self.player_group:
-                                if player != self:
-                                    new_smoke = sprite.got_shot(player)
-                                    for particle in new_smoke:
-                                        self.all_sprites.add(particle)
-                                        self.particle_group.add(particle)
+                            # Got shot by projectile
+                            new_smoke = sprite.got_shot(hit)
+                            for particle in new_smoke:
+                                self.all_sprites.add(particle)
+                                self.particle_group.add(particle)
                             hit.kill()
                             self.respawn([sprite])
                         elif isinstance(hit, c.Asteroid):
@@ -208,7 +199,7 @@ class Game():
                         if isinstance(hit, c.Wall):
                             sprite.kill()
                         if isinstance(hit, c.Asteroid):
-                            new_smoke = hit.got_shot()
+                            new_smoke = hit.got_shot(sprite)
                             for particle in new_smoke:
                                 self.all_sprites.add(particle)
                                 self.particle_group.add(particle)
@@ -247,9 +238,11 @@ class Game():
             top_left_of_playarea = ((self.SCREEN_X / 2) - (self.playarea.get_width() / 2), (self.SCREEN_Y / 2) - (self.playarea.get_height() / 2))
             self.screen.blit(self.playarea, top_left_of_playarea)
             
+            # Scales score image to fit on game border taking up 1/3rd of game screen and uses same measure for fuel
             Score_Img = fun.scale_to_fit(asset.score_img, cfg.LR_MARGIN/2, self.playarea.get_height() / 3)
             UI_width, UI_height = Score_Img.get_size()
-            
+
+            # Draws and scales the p1fuel into surface of fitting size
             P1Fuel = pg.Surface((UI_width, UI_height), pg.SRCALPHA)
             P1Fuel.fill((255, 0, 0))
             fuel_percentage = self.Player1.get_fuel() / cfg.MAX_FUEL
@@ -257,7 +250,7 @@ class Game():
             bar_height = UI_height - int(fuel_percentage * UI_height)  
             pg.draw.polygon(P1Fuel, (0, 255, 0), [(0, bar_height), (UI_width, bar_height), (UI_width, UI_height), (0, UI_height)])
 
-
+            # Draws, scales the p2fuel into surface of fitting size
             P2Fuel = pg.Surface((UI_width, UI_height), pg.SRCALPHA)
             P2Fuel.fill((255, 0, 0))
             fuel_percentage = self.Player2.get_fuel() / cfg.MAX_FUEL
@@ -265,13 +258,20 @@ class Game():
             bar_height = UI_height - int(fuel_percentage * UI_height)  
             pg.draw.polygon(P2Fuel, (0, 255, 0), [(0, bar_height), (UI_width, bar_height), (UI_width, UI_height), (0, UI_height)])
 
+            # Writes and scales the score onto surfaces of fitting size
+            p1_score = asset.score_font.render(str(self.Player1.score), True, (255, 255, 255))
+            p1_score = fun.scale_to_fit(p1_score, UI_width, UI_width)
+            p2_score = asset.score_font.render(str(self.Player2.score), True, (255, 255, 255))
+            p2_score = fun.scale_to_fit(p2_score, UI_width, UI_width)
+
+            # Blits all UI elements onto screen in correct positions
             self.screen.blit(P1Fuel, (top_left_of_playarea[0] - UI_width - 50, top_left_of_playarea[1] + self.playarea.get_height() - UI_height))
             self.screen.blit(P2Fuel, (top_left_of_playarea[0] + self.playarea.get_width() + 50 , top_left_of_playarea[1] + self.playarea.get_height() - UI_height))
-            
             self.screen.blit(Score_Img, (top_left_of_playarea[0] - UI_width - 50, top_left_of_playarea[1]))
             self.screen.blit(Score_Img, (top_left_of_playarea[0] + self.playarea.get_width() + 50, top_left_of_playarea[1]))
+            self.screen.blit(p1_score, (top_left_of_playarea[0] - UI_width - 50, top_left_of_playarea[1] + UI_height * 1.3))
+            self.screen.blit(p2_score, (top_left_of_playarea[0] + self.playarea.get_width() + 50, top_left_of_playarea[1] + UI_height * 1.3))
 
-            
             # Update the screen after all events have taken place
             pg.display.update()
 
@@ -279,6 +279,7 @@ class Game():
     def respawn(self, dead_players):
         if cfg.RESPAWN_BEHAVIOUR == 0:
             start_time = time.time()
+            # Death animation
             while time.time() <= start_time + 0.5:
                 # Track time passed since last frame. Multiply by 60 to simulate 60 fps
                 self.dt = time.time() - self.last_time
@@ -302,7 +303,6 @@ class Game():
             projectile.kill()
 
     def hard_restart(self):
-
         # Empty sprite list
         self.all_sprites = pg.sprite.Group()
 
@@ -323,10 +323,7 @@ class Game():
         self.platform_group = pg.sprite.Group()
         self.run()
 
-
-Game1 = Game()
-
-#Game1.run()
 if __name__ == "__main__":
+    Game1 = Game()
     cProfile.run("Game1.run()")
     pass
