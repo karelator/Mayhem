@@ -1,3 +1,7 @@
+# CODE BY Thomas Lillealter Nygård AND Andreas Karel Eriksen
+
+# FILE FOR CONSTANT CONFIGURATIONS
+
 # Default res at launch
 SCREEN_X = 1080 # 1080 2560
 SCREEN_Y = 720 # 720 1440

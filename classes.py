@@ -1,3 +1,5 @@
+# CODE BY Thomas Lillealter Nygård AND Andreas Karel Eriksen
+
 # Import pygame with abbreviated alias
 import pygame as pg
 import config as cfg, assets as asset

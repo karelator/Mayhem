@@ -1,3 +1,6 @@
+# CODE BY Thomas Lillealter Nygård AND Andreas Karel Eriksen
+
+#FILE FOR LEVEL DESIGN
 import classes as c, config as cfg
 
 # Function to only generate a border

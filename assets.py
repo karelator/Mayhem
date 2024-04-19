@@ -1,3 +1,5 @@
+# CODE BY Thomas Lillealter Nygård AND Andreas Karel Eriksen
+
 # FILE FOR ALL GAME ASSETS
 import pygame as pg
 
