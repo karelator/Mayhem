@@ -1,5 +1,7 @@
 # CODE BY Thomas Lillealter Nygård AND Andreas Karel Eriksen
 
+# FILE FOR ALL SEPERATE OBJECT CLASSES
+
 # Import pygame with abbreviated alias
 import pygame as pg
 import config as cfg, assets as asset
