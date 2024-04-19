@@ -220,7 +220,7 @@ class Asteroid(Movable_object):
         return smoke_list
 
 
-# Subgroup of all sprites that 
+# Subgroup of all sprites that are part of the level itself
 class Level_Design(Sprite):
     def __init__(self, image, x, y):
         super().__init__(image, x, y)
