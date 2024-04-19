@@ -1,3 +1,7 @@
+# CODE BY Thomas Lillealter Nygård AND Andreas Karel Eriksen
+
+# FILE FOR MAIN GAME LOOP
+
 # Import pygame with abbreviated alias, and initialize
 import pygame as pg
 pg.init()
