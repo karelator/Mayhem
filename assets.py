@@ -33,9 +33,11 @@ asteroid_img = pg.Surface((61, 61), pg.SRCALPHA)
 pg.draw.circle(asteroid_img, (100, 47, 36), (31, 31), 30, 0)
 
 # Make platform a grey rectangle
-platform_img = pg.Surface((75, 12), pg.SRCALPHA)
+platform_img = pg.Surface((100, 15), pg.SRCALPHA)
 platform_img.fill((38, 30, 33))
 
 # Make fuel img a red square
 fuel_img = pg.Surface((20, 20), pg.SRCALPHA)
 fuel_img.fill((255,57,57))
+
+score_font = pg.font.Font(None, 36)
