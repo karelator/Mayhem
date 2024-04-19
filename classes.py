@@ -6,8 +6,6 @@ import random, time
 class Sprite(pg.sprite.Sprite):
     def __init__(self, image, x, y):
         super().__init__()
-        # All sprites store a reference to their original image,
-        self.original_image = image
         self.image = image
         # Mask is all pixels of image that are not just transparent
         self.mask = pg.mask.from_surface(self.image)
@@ -51,7 +49,7 @@ class Player(Movable_object):
     def __init__(self, x, y):
         super().__init__(asset.rocket_img, x, y)
         
-        self.startpos = (x, y)
+        self.start_pos = (x, y)
 
         # Store inputs in field so it is accessible in update [Thrust, Rotate]
         self.inputs = [0, 0]
@@ -69,7 +67,7 @@ class Player(Movable_object):
         # Add Gravity to acceleration
         self.add_gravity(dt)
         # Accept player inputs
-        self.accept_inputs(dt)
+        self.use_inputs(dt)
     
     def is_thrusting(self):
         return self.inputs[0]
@@ -78,7 +76,7 @@ class Player(Movable_object):
         return self.fuel
 
     # Convert user input to changes in parameters
-    def accept_inputs(self, dt):
+    def use_inputs(self, dt):
         # Add rotation input to heading angle
         self.heading.rotate_ip(self.inputs[1] * 5 * dt)
         new_angle = self.heading.angle_to(pg.math.Vector2(0, -1))
@@ -150,7 +148,7 @@ class Player(Movable_object):
         rotated_image = pg.transform.rotate(asset.rocket_img, new_angle)
         self.rect = rotated_image.get_rect(center=self.rect.center)
         self.image = rotated_image
-        self.rect.center = self.startpos
+        self.rect.center = self.start_pos
         self.speed *= 0
         self.fuel = cfg.MAX_FUEL
         
@@ -224,18 +222,11 @@ class Asteroid(Movable_object):
 class Level_Design(Sprite):
     def __init__(self, image, x, y):
         super().__init__(image, x, y)
-    
-    def update(self, dt):
-        pass
 
 # Makes rectangle object you can land on with center coordinate as input to init call
 class Platform(Level_Design):
     def __init__(self, x, y):
         super().__init__(asset.platform_img, x, y)
-    
-    def update(self, dt):
-        super().update(dt)
-        pass
 
 # Make simple rectangle obstacle
 class Wall(Level_Design):
