@@ -13,14 +13,9 @@ import sys, random, time, cProfile
 
 class Game():
     def __init__(self):
-        # Object for monitor size
-        self.infoObject = pg.display.Info() 
-        # File directories and screen size
-        self.FULLSCREEN = False
         self.SCREEN_X = cfg.SCREEN_X
         self.SCREEN_Y = cfg.SCREEN_Y
-
-        # Initialize screen depending on launched with fullscreen or not
+        # Initialize screen to default size
         self.screen = pg.display.set_mode((self.SCREEN_X, self.SCREEN_Y), pg.RESIZABLE)
         pg.display.set_caption("Budget Blastoff")
 
@@ -85,23 +80,11 @@ class Game():
                     running = False
                 # Resize window properly
                 elif event.type == pg.VIDEORESIZE:
-                    if not self.FULLSCREEN:
-                        self.SCREEN_X, self.SCREEN_Y = event.w, event.h
-                        pg.display.set_mode((self.SCREEN_X, self.SCREEN_Y), pg.RESIZABLE)
-                        self.background = fun.scale_to_cover(asset.origbg, self.SCREEN_X, self.SCREEN_Y)
-                        self.background.convert()
-                        self.screen.blit(self.background, (0, 0))
-                        self.playarea = fun.scale_to_fit(self.orig_playarea, self.SCREEN_X - cfg.LR_MARGIN, self.SCREEN_Y - cfg.UD_MARGIN)
-
-                # Toggle between Fullscreen and Windowed
-                elif event.type == pg.KEYDOWN and event.key == pg.K_F11:
-                    # Toggle Fullscreen bool
-                    self.FULLSCREEN = not self.FULLSCREEN
-                    self.SCREEN_X = self.infoObject.current_w if self.FULLSCREEN else cfg.SCREEN_X
-                    self.SCREEN_Y = self.infoObject.current_h if self.FULLSCREEN else cfg.SCREEN_Y
-                    self.screen = pg.display.set_mode((self.SCREEN_X, self.SCREEN_Y), pg.FULLSCREEN if self.FULLSCREEN else pg.RESIZABLE)
+                    self.SCREEN_X, self.SCREEN_Y = event.w, event.h
+                    pg.display.set_mode((self.SCREEN_X, self.SCREEN_Y), pg.RESIZABLE)
                     self.background = fun.scale_to_cover(asset.origbg, self.SCREEN_X, self.SCREEN_Y)
                     self.background.convert()
+                    self.screen.blit(self.background, (0, 0))
                     self.playarea = fun.scale_to_fit(self.orig_playarea, self.SCREEN_X - cfg.LR_MARGIN, self.SCREEN_Y - cfg.UD_MARGIN)
 
                 elif event.type == pg.KEYDOWN and event.key == pg.K_r:
